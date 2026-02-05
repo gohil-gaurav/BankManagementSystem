@@ -1,0 +1,652 @@
+/* Modern Bank Management System - Black & White Theme */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0a0a0a;
+    color: #ffffff;
+    line-height: 1.6;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Subtle background pattern */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Navigation Bar - Black & White Theme */
+nav {
+    background: #000000;
+    color: white;
+    padding: 1.25rem 2.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid #1a1a1a;
+    position: relative;
+    z-index: 100;
+}
+
+nav .nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+nav h1 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+nav a {
+    color: #999999;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+}
+
+nav a:hover {
+    color: #ffffff;
+    background: #1a1a1a;
+}
+
+/* Container */
+.container {
+    max-width: 1400px;
+    margin: 2.5rem auto;
+    padding: 0 2.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* Cards - Black & White Theme */
+.card {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.7);
+    border-color: #3a3a3a;
+}
+
+.card h2 {
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.card p {
+    color: #999999;
+}
+
+/* Forms - Black & White Theme */
+form {
+    max-width: 500px;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #ffffff;
+    font-size: 0.9rem;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+.form-control {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #ffffff;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: #ffffff;
+    background: #141414;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+input::placeholder {
+    color: #666666;
+}
+
+/* Buttons - Black & White Style */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: #ffffff;
+    color: #000000;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+    background: #f0f0f0;
+}
+
+.btn-success {
+    background: #ffffff;
+    color: #000000;
+}
+
+.btn-success:hover {
+    background: #e6e6e6;
+}
+
+.btn-danger {
+    background: #2a2a2a;
+    color: #ffffff;
+    border: 1px solid #3a3a3a;
+}
+
+.btn-danger:hover {
+    background: #333333;
+    border-color: #4a4a4a;
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid #3a3a3a;
+    color: #ffffff;
+    box-shadow: none;
+}
+
+.btn-secondary:hover {
+    background: #1a1a1a;
+    border-color: #4a4a4a;
+}
+
+/* Messages - Black & White Alert Style */
+.messages {
+    list-style: none;
+    margin-bottom: 1rem;
+}
+
+.alert {
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border: 1px solid;
+    font-weight: 500;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-success {
+    background: #1a1a1a;
+    color: #ffffff;
+    border-color: #3a3a3a;
+}
+
+.alert-error {
+    background: #1a1a1a;
+    color: #ffffff;
+    border-color: #3a3a3a;
+}
+
+.alert-info {
+    background: #1a1a1a;
+    color: #ffffff;
+    border-color: #3a3a3a;
+}
+
+/* Dashboard specific - Black & White Cards */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.info-box {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.info-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #ffffff;
+}
+
+.info-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+    border-color: #3a3a3a;
+}
+
+.info-box h3 {
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+    color: #999999;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.info-box p {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.info-box.balance::before {
+    background: #ffffff;
+}
+
+.info-box.income::before {
+    background: #cccccc;
+}
+
+.info-box.expense::before {
+    background: #888888;
+}
+
+/* Table - Black & White Theme */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+}
+
+table th,
+table td {
+    padding: 1.5rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+table th {
+    background: #1a1a1a;
+    color: #999999;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+table td {
+    color: #ffffff;
+    font-size: 0.95rem;
+}
+
+table tr {
+    transition: background 0.2s ease;
+}
+
+table tr:hover {
+    background: #1a1a1a;
+}
+
+.credit {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.debit {
+    color: #cccccc;
+    font-weight: 600;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-completed {
+    background: #ffffff;
+    color: #000000;
+}
+
+.status-pending {
+    background: #666666;
+    color: #ffffff;
+}
+
+.status-failed {
+    background: #333333;
+    color: #ffffff;
+}
+
+
+/* Welcome Section */
+.welcome-section {
+    margin-bottom: 2.5rem;
+}
+
+.welcome-section h2 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.75rem;
+}
+
+.welcome-section .subtitle {
+    color: #999999;
+    font-size: 1.05rem;
+}
+
+/* Tab Navigation */
+.tab-nav {
+    display: flex;
+    gap: 3rem;
+    border-bottom: 1px solid #2a2a2a;
+    margin-bottom: 2.5rem;
+}
+
+.tab-nav button {
+    background: none;
+    border: none;
+    color: #666666;
+    padding: 1.25rem 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tab-nav button.active {
+    color: #ffffff;
+    border-bottom-color: #ffffff;
+}
+
+.tab-nav button:hover {
+    color: #ffffff;
+}
+
+/* Quick Actions Grid */
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+/* Icon Styles */
+.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: #1a1a1a;
+    margin-bottom: 0.75rem;
+}
+
+/* Transaction Icon */
+.transaction-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    background: #1a1a1a;
+}
+
+.transaction-icon.deposit {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+}
+
+.transaction-icon.withdraw {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: #0a0a0a;
+    border-radius: 12px;
+    border: 2px dashed #2a2a2a;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.empty-state p {
+    color: #999999;
+    font-size: 1rem;
+}
+
+/* Auth Pages Specific */
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.auth-card {
+    max-width: 480px;
+    width: 100%;
+    background: #0a0a0a;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 3rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.auth-card h2 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+}
+
+.auth-card .subtitle {
+    color: #999999;
+    margin-bottom: 2rem;
+}
+
+.auth-divider {
+    margin: 2rem 0;
+    border: none;
+    border-top: 1px solid #2a2a2a;
+}
+
+.auth-link {
+    text-align: center;
+    color: #999999;
+}
+
+.auth-link a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.auth-link a:hover {
+    color: #cccccc;
+}
+
+/* Form Errors */
+.errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+}
+
+.errorlist li {
+    color: #ffffff;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    background: #1a1a1a;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border-left: 3px solid #ffffff;
+}
+
+/* Helper Text */
+.help-text {
+    display: block;
+    color: #666666;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    nav .nav-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+    
+    .auth-card {
+        padding: 2rem;
+    }
+    
+    table {
+        font-size: 0.85rem;
+    }
+    
+    table th,
+    table td {
+        padding: 0.75rem 0.5rem;
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #2a2a2a;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #3a3a3a;
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loading {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

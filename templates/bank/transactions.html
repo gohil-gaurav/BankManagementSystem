@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Transactions - Bank Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <div>
+            <h2 style="margin: 0;">Transaction History</h2>
+            <p style="color: #999999; margin-top: 0.5rem;">View all your banking transactions</p>
+        </div>
+        <a href="{% url 'bank:dashboard' %}" class="btn btn-secondary">
+            ← Back to Dashboard
+        </a>
+    </div>
+    
+    {% if transactions %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Transaction</th>
+                    <th>Type</th>
+                    <th>Date & Time</th>
+                    <th>Amount</th>
+                    <th>Balance After</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <div class="transaction-icon {% if transaction.transaction_type == 'DEPOSIT' %}deposit{% else %}withdraw{% endif %}">
+                                {% if transaction.transaction_type == 'DEPOSIT' %}
+                                    📥
+                                {% else %}
+                                    📤
+                                {% endif %}
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">
+                                    {% if transaction.transaction_type == 'DEPOSIT' %}
+                                        Deposit
+                                    {% else %}
+                                        Withdrawal
+                                    {% endif %}
+                                </div>
+                                <div style="font-size: 0.8rem; color: #666666;">
+                                    {{ transaction.description|default:"Bank transaction" }}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        {% if transaction.transaction_type == 'DEPOSIT' %}
+                            <span style="color: #ffffff; font-weight: 600;">Credit</span>
+                        {% else %}
+                            <span style="color: #cccccc; font-weight: 600;">Debit</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div>{{ transaction.timestamp|date:"M d, Y" }}</div>
+                        <div style="font-size: 0.8rem; color: #666666;">{{ transaction.timestamp|date:"h:i A" }}</div>
+                    </td>
+                    <td>
+                        {% if transaction.transaction_type == 'DEPOSIT' %}
+                            <span class="credit" style="font-size: 1.1rem;">+${{ transaction.amount }}</span>
+                        {% else %}
+                            <span class="debit" style="font-size: 1.1rem;">-${{ transaction.amount }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="font-weight: 600;">${{ transaction.balance_after }}</td>
+                    <td>
+                        <span class="status-badge status-completed">Completed</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📊</div>
+            <p>No transactions yet. Start by making your first deposit!</p>
+            <br>
+            <a href="{% url 'bank:deposit' %}" class="btn btn-success">Make a Deposit</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

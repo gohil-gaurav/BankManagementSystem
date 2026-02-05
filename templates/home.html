@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome - Bank Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Welcome to Bank Management System</h2>
+    <p>A simple banking application built with Django.</p>
+    <br>
+    <p>Please <a href="{% url 'users:login' %}">login</a> or <a href="{% url 'users:register' %}">register</a> to continue.</p>
+</div>
+{% endblock %}
