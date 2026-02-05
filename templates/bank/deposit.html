@@ -3,10 +3,75 @@
 {% block title %}Deposit - Bank Management System{% endblock %}
 
 {% block content %}
-<div class="card">
-    <h2>Deposit Money</h2>
-    <p style="color: #666;">This feature will be implemented in the next step.</p>
-    <br>
-    <a href="{% url 'bank:dashboard' %}" class="btn">← Back to Dashboard</a>
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h2 style="margin: 0;">Deposit Money</h2>
+            <p style="color: #999999; margin-top: 0.5rem;">Add funds to your account</p>
+        </div>
+        <a href="{% url 'bank:dashboard' %}" class="btn btn-secondary">
+            ← Back
+        </a>
+    </div>
+    
+    <!-- Account Info -->
+    <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid #2a2a2a;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <p style="color: #999999; font-size: 0.85rem; margin-bottom: 0.5rem;">Current Balance</p>
+                <p style="font-size: 1.75rem; font-weight: 700; color: #ffffff; margin: 0;">${{ account.balance }}</p>
+            </div>
+            <div style="text-align: right;">
+                <p style="color: #999999; font-size: 0.85rem; margin-bottom: 0.5rem;">Account Number</p>
+                <p style="font-size: 1rem; font-weight: 600; color: #ffffff; margin: 0;">{{ account.account_number }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Deposit Form -->
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Amount Field -->
+        <div class="form-group">
+            <label for="{{ form.amount.id_for_label }}">{{ form.amount.label }}</label>
+            {{ form.amount }}
+            {% if form.amount.errors %}
+                <ul class="errorlist">
+                    {% for error in form.amount.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% if form.amount.help_text %}
+                <small class="help-text">{{ form.amount.help_text }}</small>
+            {% endif %}
+        </div>
+        
+        <!-- Description Field -->
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <ul class="errorlist">
+                    {% for error in form.description.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 1rem;">
+            💰 Deposit Money
+        </button>
+    </form>
+    
+    <!-- Info Box -->
+    <div style="background: #0a0a0a; padding: 1.5rem; border-radius: 8px; margin-top: 2rem; border: 2px dashed #2a2a2a;">
+        <p style="color: #999999; font-size: 0.9rem; margin: 0;">
+            <strong style="color: #ffffff;">Note:</strong> Deposits are processed instantly. Your new balance will be reflected immediately after the transaction.
+        </p>
+    </div>
 </div>
 {% endblock %}
