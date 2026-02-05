@@ -17,7 +17,7 @@ class DepositForm(forms.Form):
             'min': '0.01'
         }),
         label='Amount',
-        help_text='Enter the amount you want to deposit (minimum $0.01)'
+        help_text='Enter the amount you want to deposit (minimum ₹0.01)'
     )
     
     description = forms.CharField(
@@ -40,7 +40,7 @@ class DepositForm(forms.Form):
             raise forms.ValidationError('Amount must be greater than zero.')
         
         if amount > Decimal('1000000.00'):
-            raise forms.ValidationError('Amount cannot exceed $1,000,000.00 per transaction.')
+            raise forms.ValidationError('Amount cannot exceed ₹1,000,000.00 per transaction.')
         
         return amount
 
@@ -60,7 +60,7 @@ class WithdrawForm(forms.Form):
             'min': '0.01'
         }),
         label='Amount',
-        help_text='Enter the amount you want to withdraw (minimum $0.01)'
+        help_text='Enter the amount you want to withdraw (minimum ₹0.01)'
     )
     
     description = forms.CharField(
@@ -91,10 +91,10 @@ class WithdrawForm(forms.Form):
         
         if amount > self.balance:
             raise forms.ValidationError(
-                f'Insufficient funds. Your current balance is ${self.balance}.'
+                f'Insufficient funds. Your current balance is ₹{self.balance}.'
             )
         
         if amount > Decimal('1000000.00'):
-            raise forms.ValidationError('Amount cannot exceed $1,000,000.00 per transaction.')
+            raise forms.ValidationError('Amount cannot exceed ₹1,000,000.00 per transaction.')
         
         return amount

@@ -5,7 +5,7 @@
 {% block content %}
 <!-- Welcome Section -->
 <div class="welcome-section">
-    <h2>Welcome back, {{ user.username }}! 👋</h2>
+    <h2>Welcome back, {{ user.username }}!</h2>
     <p class="subtitle">Here's your financial overview</p>
 </div>
 
@@ -25,7 +25,7 @@
     
     <div class="info-box income">
         <h3>Total Balance</h3>
-        <p>${{ account.balance }}</p>
+        <p>₹{{ account.balance }}</p>
     </div>
     
     <div class="info-box expense">
@@ -39,13 +39,13 @@
     <h2>Quick Actions</h2>
     <div class="quick-actions">
         <a href="{% url 'bank:deposit' %}" class="btn btn-success">
-            💰 Deposit Money
+            Deposit Money
         </a>
         <a href="{% url 'bank:withdraw' %}" class="btn btn-danger">
-            💸 Withdraw Money
+            Withdraw Money
         </a>
         <a href="{% url 'bank:transactions' %}" class="btn btn-secondary">
-            📊 View All Transactions
+            View All Transactions
         </a>
     </div>
 </div>
@@ -79,9 +79,9 @@
                         <div style="display: flex; align-items: center; gap: 1rem;">
                             <div class="transaction-icon {% if transaction.transaction_type == 'DEPOSIT' %}deposit{% else %}withdraw{% endif %}">
                                 {% if transaction.transaction_type == 'DEPOSIT' %}
-                                    📥
+                                    ↓
                                 {% else %}
-                                    📤
+                                    ↑
                                 {% endif %}
                             </div>
                             <div>
@@ -111,9 +111,9 @@
                     </td>
                     <td>
                         {% if transaction.transaction_type == 'DEPOSIT' %}
-                            <span class="credit" style="font-size: 1.05rem;">+${{ transaction.amount }}</span>
+                            <span class="credit" style="font-size: 1.05rem;">+₹{{ transaction.amount }}</span>
                         {% else %}
-                            <span class="debit" style="font-size: 1.05rem;">-${{ transaction.amount }}</span>
+                            <span class="debit" style="font-size: 1.05rem;">-₹{{ transaction.amount }}</span>
                         {% endif %}
                     </td>
                     <td>

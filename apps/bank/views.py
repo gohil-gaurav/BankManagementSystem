@@ -55,7 +55,7 @@ def deposit_view(request):
             # Show success message
             messages.success(
                 request,
-                f'Successfully deposited ${amount}. New balance: ${account.balance}'
+                f'Successfully deposited ₹{amount}. New balance: ₹{account.balance}'
             )
             
             # Redirect to dashboard
@@ -89,7 +89,7 @@ def withdraw_view(request):
             if amount > account.balance:
                 messages.error(
                     request,
-                    f'Insufficient funds. Your current balance is ${account.balance}.'
+                    f'Insufficient funds. Your current balance is ₹{account.balance}.'
                 )
                 return redirect('bank:withdraw')
             
@@ -111,7 +111,7 @@ def withdraw_view(request):
             # Show success message
             messages.success(
                 request,
-                f'Successfully withdrew ${amount}. New balance: ${account.balance}'
+                f'Successfully withdrew ₹{amount}. New balance: ₹{account.balance}'
             )
             
             # Redirect to dashboard
