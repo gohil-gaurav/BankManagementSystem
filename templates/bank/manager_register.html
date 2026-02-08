@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Bank Manager Registration{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Bank Manager Registration</h2>
+        <p class="auth-subtitle">Create a new manager account</p>
+        
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="error-message">{{ form.username.errors.0 }}</div>
+                {% endif %}
+                {% if form.username.help_text %}
+                    <small class="form-help">{{ form.username.help_text }}</small>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">Email (Optional)</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="error-message">{{ form.email.errors.0 }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.employee_id.id_for_label }}">Employee ID</label>
+                {{ form.employee_id }}
+                {% if form.employee_id.errors %}
+                    <div class="error-message">{{ form.employee_id.errors.0 }}</div>
+                {% endif %}
+                {% if form.employee_id.help_text %}
+                    <small class="form-help">{{ form.employee_id.help_text }}</small>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.phone.id_for_label }}">Phone (Optional)</label>
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                    <div class="error-message">{{ form.phone.errors.0 }}</div>
+                {% endif %}
+                {% if form.phone.help_text %}
+                    <small class="form-help">{{ form.phone.help_text }}</small>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}">Password</label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                    <div class="error-message">{{ form.password1.errors.0 }}</div>
+                {% endif %}
+                {% if form.password1.help_text %}
+                    <small class="form-help">{{ form.password1.help_text }}</small>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                    <div class="error-message">{{ form.password2.errors.0 }}</div>
+                {% endif %}
+                {% if form.password2.help_text %}
+                    <small class="form-help">{{ form.password2.help_text }}</small>
+                {% endif %}
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">Register as Manager</button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Already have a manager account? <a href="{% url 'bank:manager_login' %}">Login here</a></p>
+            <p>Regular user? <a href="{% url 'users:register' %}">Register as customer</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

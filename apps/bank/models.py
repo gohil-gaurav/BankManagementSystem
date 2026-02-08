@@ -5,12 +5,45 @@ from django.dispatch import receiver
 import random
 
 
+class BankManager(models.Model):
+    """
+    Bank Manager Model
+    - Identifies which users are bank managers
+    - Managers can view all accounts and transactions
+    """
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='manager_profile'
+    )
+    employee_id = models.CharField(max_length=10, unique=True)
+    phone = models.CharField(max_length=15, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Manager: {self.user.username}"
+    
+    class Meta:
+        verbose_name = 'Bank Manager'
+        verbose_name_plural = 'Bank Managers'
+
+
 class Account(models.Model):
     """
     Bank Account Model
     - Each user has ONE account (One-to-One relationship)
     - Stores account number, balance, and creation date
     """
+    
+    # Account Status Choices
+    ACTIVE = 'ACTIVE'
+    FROZEN = 'FROZEN'
+    
+    STATUS_CHOICES = [
+        (ACTIVE, 'Active'),
+        (FROZEN, 'Frozen'),
+    ]
+    
     user = models.OneToOneField(
         User, 
         on_delete=models.CASCADE,
@@ -37,8 +70,18 @@ class Account(models.Model):
     # max_digits=12 means: up to 9,999,999,999.99 (10 digits + 2 decimals)
     # decimal_places=2 means: always 2 decimal places (cents)
     
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default=ACTIVE
+    )
+    # Account can be ACTIVE or FROZEN by manager
+    
     created_at = models.DateTimeField(auto_now_add=True)
     # auto_now_add=True means: automatically set when account is created
+    
+    last_activity = models.DateTimeField(auto_now=True)
+    # Tracks last activity on account
     
     def __str__(self):
         return f"{self.user.username} - {self.account_number}"
@@ -89,6 +132,19 @@ class Transaction(models.Model):
     # WHY choices? Limits transaction_type to only these two values
     # Prevents typos like "depositt" or "withdra"
     
+    # Transaction status choices
+    PENDING = 'PENDING'
+    APPROVED = 'APPROVED'
+    REJECTED = 'REJECTED'
+    COMPLETED = 'COMPLETED'
+    
+    STATUS_CHOICES = [
+        (PENDING, 'Pending'),
+        (APPROVED, 'Approved'),
+        (REJECTED, 'Rejected'),
+        (COMPLETED, 'Completed'),
+    ]
+    
     account = models.ForeignKey(
         Account,
         on_delete=models.CASCADE,
@@ -116,6 +172,13 @@ class Transaction(models.Model):
     # WHY store balance_after? So we can show historical balance at each transaction
     # Example: "On Jan 1, you withdrew $50, balance was $450"
     
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default=COMPLETED
+    )
+    # Transaction status for approval workflow
+    
     description = models.CharField(
         max_length=200,
         blank=True,
@@ -128,13 +191,75 @@ class Transaction(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     # When the transaction happened
     
+    approved_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='approved_transactions'
+    )
+    # Manager who approved the transaction
+    
+    approval_note = models.TextField(blank=True, null=True)
+    # Manager's note when approving/rejecting
+    
     def __str__(self):
-        return f"{self.transaction_type} - ${self.amount} - {self.timestamp.strftime('%Y-%m-%d %H:%M')}"
+        return f"{self.transaction_type} - ₹{self.amount} - {self.timestamp.strftime('%Y-%m-%d %H:%M')}"
     
     class Meta:
         ordering = ['-timestamp']  # Newest transactions first
         verbose_name = 'Transaction'
         verbose_name_plural = 'Transactions'
+
+
+class ManagerAction(models.Model):
+    """
+    Log of all manager actions for audit trail
+    """
+    ACTION_TYPES = [
+        ('FREEZE_ACCOUNT', 'Freeze Account'),
+        ('UNFREEZE_ACCOUNT', 'Unfreeze Account'),
+        ('APPROVE_TRANSACTION', 'Approve Transaction'),
+        ('REJECT_TRANSACTION', 'Reject Transaction'),
+        ('VIEW_USER', 'View User Details'),
+        ('VIEW_ACCOUNT', 'View Account Details'),
+    ]
+    
+    manager = models.ForeignKey(
+        BankManager,
+        on_delete=models.CASCADE,
+        related_name='actions'
+    )
+    action_type = models.CharField(max_length=30, choices=ACTION_TYPES)
+    target_user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='manager_actions_on'
+    )
+    target_account = models.ForeignKey(
+        Account,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    target_transaction = models.ForeignKey(
+        Transaction,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    note = models.TextField(blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.manager.user.username} - {self.action_type} - {self.timestamp}"
+    
+    class Meta:
+        ordering = ['-timestamp']
+        verbose_name = 'Manager Action'
+        verbose_name_plural = 'Manager Actions'
 
 
 # Signal to auto-create account when user registers
@@ -145,8 +270,10 @@ def create_user_account(sender, instance, created, **kwargs):
     This is called a 'signal' - it listens for User creation
     """
     if created:  # Only run when a NEW user is created (not on updates)
-        Account.objects.create(user=instance)
-        # Creates account with default balance of 0.00
+        # Don't create account for managers
+        if not hasattr(instance, 'manager_profile'):
+            Account.objects.create(user=instance)
+            # Creates account with default balance of 0.00
 
 
 @receiver(post_save, sender=User)

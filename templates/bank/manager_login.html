@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Bank Manager Login{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Bank Manager Login</h2>
+        <p class="auth-subtitle">Access the management dashboard</p>
+        
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="error-message">{{ form.username.errors.0 }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">Password</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <div class="error-message">{{ form.password.errors.0 }}</div>
+                {% endif %}
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">Login as Manager</button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Don't have a manager account? <a href="{% url 'bank:manager_register' %}">Register here</a></p>
+            <p>Regular user? <a href="{% url 'users:login' %}">Login here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Manager Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div>
+            <h1>Bank Manager Dashboard</h1>
+            <p class="subtitle">Welcome, {{ manager.user.get_full_name|default:manager.user.username }}</p>
+            <p class="subtitle">Employee ID: {{ manager.employee_id }}</p>
+        </div>
+        <a href="{% url 'bank:manager_logout' %}" class="btn btn-secondary">Logout</a>
+    </div>
+
+    <!-- Quick Navigation -->
+    <div class="quick-nav">
+        <a href="{% url 'bank:manager_users' %}" class="nav-card">
+            <h3>Users</h3>
+            <p>Supervise all users</p>
+        </a>
+        <a href="{% url 'bank:manager_accounts' %}" class="nav-card">
+            <h3>Accounts</h3>
+            <p>Monitor accounts</p>
+        </a>
+        <a href="{% url 'bank:manager_transactions' %}" class="nav-card">
+            <h3>Transactions</h3>
+            <p>View all transactions</p>
+        </a>
+        <a href="{% url 'bank:manager_pending_approvals' %}" class="nav-card">
+            <h3>Approvals</h3>
+            <p>{{ pending_transactions }} pending</p>
+        </a>
+        <a href="{% url 'bank:manager_reports' %}" class="nav-card">
+            <h3>Reports</h3>
+            <p>Generate reports</p>
+        </a>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Users</div>
+            <div class="stat-value">{{ total_users }}</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-label">Total Accounts</div>
+            <div class="stat-value">{{ total_accounts }}</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-label">Total Balance</div>
+            <div class="stat-value">₹{{ total_balance|floatformat:2 }}</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-label">Today's Transactions</div>
+            <div class="stat-value">{{ today_transactions }}</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-label">Pending Approvals</div>
+            <div class="stat-value" style="color: #fbbf24;">{{ pending_transactions }}</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-label">Frozen Accounts</div>
+            <div class="stat-value" style="color: #ef4444;">{{ frozen_accounts }}</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-label">Total Deposits</div>
+            <div class="stat-value">₹{{ total_deposits|floatformat:2 }}</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-label">Total Withdrawals</div>
+            <div class="stat-value">₹{{ total_withdrawals|floatformat:2 }}</div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>Recent Transactions</h2>
+            <a href="{% url 'bank:manager_transactions' %}" class="btn btn-sm">View All</a>
+        </div>
+        
+        {% if recent_transactions %}
+        <div class="table-responsive">
+            <table class="transactions-table">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Account</th>
+                        <th>Customer</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in recent_transactions %}
+                    <tr>
+                        <td>{{ transaction.timestamp|date:"M d, Y H:i" }}</td>
+                        <td>{{ transaction.account.account_number }}</td>
+                        <td>{{ transaction.account.user.username }}</td>
+                        <td>
+                            {% if transaction.transaction_type == 'DEPOSIT' %}
+                                <span class="badge badge-success">↓ Deposit</span>
+                            {% else %}
+                                <span class="badge badge-danger">↑ Withdraw</span>
+                            {% endif %}
+                        </td>
+                        <td class="amount">₹{{ transaction.amount|floatformat:2 }}</td>
+                        <td>
+                            {% if transaction.status == 'COMPLETED' %}
+                                <span class="badge badge-success">Completed</span>
+                            {% elif transaction.status == 'PENDING' %}
+                                <span class="badge badge-warning">Pending</span>
+                            {% elif transaction.status == 'APPROVED' %}
+                                <span class="badge badge-success">Approved</span>
+                            {% else %}
+                                <span class="badge badge-danger">Rejected</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No transactions yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

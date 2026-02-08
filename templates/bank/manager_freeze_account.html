@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Freeze Account{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="confirmation-box">
+        <h2>Freeze Account</h2>
+        
+        <div class="warning">
+            <strong>⚠️ Warning:</strong> You are about to freeze this account. The customer will not be able to perform any transactions until the account is unfrozen.
+        </div>
+        
+        <div class="account-info-grid" style="margin-bottom: 20px;">
+            <div class="info-item">
+                <span class="info-label">Account Number:</span>
+                <span class="info-value">{{ account.account_number }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Customer:</span>
+                <span class="info-value">{{ account.user.username }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Balance:</span>
+                <span class="info-value">₹{{ account.balance|floatformat:2 }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Current Status:</span>
+                <span class="info-value">
+                    {% if account.status == 'ACTIVE' %}
+                        <span class="status-active">Active</span>
+                    {% else %}
+                        <span class="status-frozen">Frozen</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="reason">Reason for Freezing (Required):</label>
+                <textarea 
+                    name="reason" 
+                    id="reason" 
+                    required
+                    placeholder="Enter the reason for freezing this account..."
+                ></textarea>
+            </div>
+            
+            <div class="action-buttons" style="margin-top: 20px;">
+                <button type="submit" class="btn btn-primary" style="background: #ef4444;">Freeze Account</button>
+                <a href="{% url 'bank:manager_account_detail' account.id %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

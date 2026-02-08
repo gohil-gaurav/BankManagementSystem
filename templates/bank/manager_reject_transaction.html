@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Reject Transaction{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="confirmation-box">
+        <h2>Reject Transaction</h2>
+        
+        <div class="warning">
+            <strong>⚠️ Warning:</strong> You are about to reject this transaction. This action cannot be undone.
+        </div>
+        
+        <!-- Transaction Details -->
+        <div class="card" style="margin: 20px 0;">
+            <h3 style="color: #fff; margin-bottom: 15px;">Transaction Details</h3>
+            <div class="account-info-grid">
+                <div class="info-item">
+                    <span class="info-label">Transaction ID:</span>
+                    <span class="info-value">#{{ transaction.id }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Date & Time:</span>
+                    <span class="info-value">{{ transaction.timestamp|date:"F d, Y H:i" }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Account Number:</span>
+                    <span class="info-value">{{ transaction.account.account_number }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Customer:</span>
+                    <span class="info-value">{{ transaction.account.user.username }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Type:</span>
+                    <span class="info-value">
+                        {% if transaction.transaction_type == 'DEPOSIT' %}
+                            Deposit
+                        {% else %}
+                            Withdraw
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Amount:</span>
+                    <span class="info-value balance-amount">₹{{ transaction.amount|floatformat:2 }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Current Balance:</span>
+                    <span class="info-value">₹{{ transaction.account.balance|floatformat:2 }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Description:</span>
+                    <span class="info-value">{{ transaction.description|default:"—" }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="note">Rejection Reason (Required):</label>
+                <textarea 
+                    name="note" 
+                    id="note"
+                    required
+                    placeholder="Explain why this transaction is being rejected..."
+                ></textarea>
+            </div>
+            
+            <div class="action-buttons" style="margin-top: 20px;">
+                <button type="submit" class="btn btn-primary" style="background: #ef4444;">Reject Transaction</button>
+                <a href="{% url 'bank:manager_pending_approvals' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Account Monitoring{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div>
+            <h1>Account Monitoring</h1>
+            <p class="subtitle">View and manage all bank accounts</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="{% url 'bank:manager_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+            <a href="{% url 'bank:manager_logout' %}" class="btn btn-secondary">Logout</a>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="filter-form">
+        <form method="get">
+            <div class="filter-row">
+                <input 
+                    type="text" 
+                    name="search" 
+                    placeholder="Search by account number or username..." 
+                    value="{{ search_query }}"
+                >
+                <select name="status">
+                    <option value="">All Status</option>
+                    <option value="ACTIVE" {% if status_filter == 'ACTIVE' %}selected{% endif %}>Active</option>
+                    <option value="FROZEN" {% if status_filter == 'FROZEN' %}selected{% endif %}>Frozen</option>
+                </select>
+            </div>
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                <a href="{% url 'bank:manager_accounts' %}" class="btn btn-secondary">Clear</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Accounts Table -->
+    <div class="card">
+        <h2>All Accounts ({{ accounts.count }})</h2>
+        
+        {% if accounts %}
+        <div class="table-responsive">
+            <table class="transactions-table">
+                <thead>
+                    <tr>
+                        <th>Account Number</th>
+                        <th>Customer</th>
+                        <th>Balance</th>
+                        <th>Status</th>
+                        <th>Created Date</th>
+                        <th>Last Activity</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for account in accounts %}
+                    <tr>
+                        <td><strong>{{ account.account_number }}</strong></td>
+                        <td>{{ account.user.username }}</td>
+                        <td class="amount">₹{{ account.balance|floatformat:2 }}</td>
+                        <td>
+                            {% if account.status == 'ACTIVE' %}
+                                <span class="badge badge-success">Active</span>
+                            {% else %}
+                                <span class="badge badge-danger">Frozen</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ account.created_at|date:"M d, Y" }}</td>
+                        <td>{{ account.last_activity|date:"M d, Y H:i" }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{% url 'bank:manager_account_detail' account.id %}" class="btn btn-sm">View</a>
+                                {% if account.status == 'ACTIVE' %}
+                                    <a href="{% url 'bank:manager_freeze_account' account.id %}" class="btn btn-sm" style="background: #ef4444;">Freeze</a>
+                                {% else %}
+                                    <a href="{% url 'bank:manager_unfreeze_account' account.id %}" class="btn btn-sm" style="background: #4ade80;">Unfreeze</a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No accounts found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

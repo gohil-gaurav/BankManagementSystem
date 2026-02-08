@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Pending Approvals{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div>
+            <h1>Pending Transaction Approvals</h1>
+            <p class="subtitle">Review and approve/reject transactions</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="{% url 'bank:manager_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+            <a href="{% url 'bank:manager_logout' %}" class="btn btn-secondary">Logout</a>
+        </div>
+    </div>
+
+    <!-- Pending Transactions -->
+    <div class="card">
+        <h2>Pending Transactions ({{ pending_transactions.count }})</h2>
+        
+        {% if pending_transactions %}
+        <div class="table-responsive">
+            <table class="transactions-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date & Time</th>
+                        <th>Account</th>
+                        <th>Customer</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in pending_transactions %}
+                    <tr>
+                        <td>#{{ transaction.id }}</td>
+                        <td>{{ transaction.timestamp|date:"M d, Y H:i" }}</td>
+                        <td>{{ transaction.account.account_number }}</td>
+                        <td>{{ transaction.account.user.username }}</td>
+                        <td>
+                            {% if transaction.transaction_type == 'DEPOSIT' %}
+                                <span class="badge badge-success">↓ Deposit</span>
+                            {% else %}
+                                <span class="badge badge-danger">↑ Withdraw</span>
+                            {% endif %}
+                        </td>
+                        <td class="amount">₹{{ transaction.amount|floatformat:2 }}</td>
+                        <td>{{ transaction.description|default:"—" }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{% url 'bank:manager_approve_transaction' transaction.id %}" class="btn btn-sm" style="background: #4ade80;">Approve</a>
+                                <a href="{% url 'bank:manager_reject_transaction' transaction.id %}" class="btn btn-sm" style="background: #ef4444;">Reject</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No pending transactions. All caught up! ✓</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Account Details - {{ account.account_number }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div>
+            <h1>Account Details</h1>
+            <p class="subtitle">{{ account.account_number }}</p>
+        </div>
+        <div>
+            <a href="{% url 'bank:manager_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+            <a href="{% url 'bank:manager_logout' %}" class="btn btn-secondary">Logout</a>
+        </div>
+    </div>
+
+    <!-- Account Information -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>Customer Information</h2>
+            <div class="action-buttons">
+                {% if account.status == 'ACTIVE' %}
+                    <a href="{% url 'bank:manager_freeze_account' account.id %}" class="btn btn-sm" style="background: #ef4444;">Freeze Account</a>
+                {% else %}
+                    <a href="{% url 'bank:manager_unfreeze_account' account.id %}" class="btn btn-sm" style="background: #4ade80;">Unfreeze Account</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="account-info-grid">
+            <div class="info-item">
+                <span class="info-label">Account Number:</span>
+                <span class="info-value">{{ account.account_number }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Username:</span>
+                <span class="info-value">{{ account.user.username }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Full Name:</span>
+                <span class="info-value">{{ account.user.get_full_name|default:"Not provided" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Email:</span>
+                <span class="info-value">{{ account.user.email|default:"Not provided" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Current Balance:</span>
+                <span class="info-value balance-amount">₹{{ account.balance|floatformat:2 }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Account Status:</span>
+                <span class="info-value">
+                    {% if account.status == 'ACTIVE' %}
+                        <span class="status-active">Active</span>
+                    {% else %}
+                        <span class="status-frozen">Frozen</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Account Created:</span>
+                <span class="info-value">{{ account.created_at|date:"F d, Y H:i" }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction History -->
+    <div class="card">
+        <h2>Transaction History</h2>
+        
+        {% if transactions %}
+        <div class="table-responsive">
+            <table class="transactions-table">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Balance After</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.timestamp|date:"M d, Y H:i" }}</td>
+                        <td>
+                            {% if transaction.transaction_type == 'DEPOSIT' %}
+                                <span class="badge badge-success">↓ Deposit</span>
+                            {% else %}
+                                <span class="badge badge-danger">↑ Withdraw</span>
+                            {% endif %}
+                        </td>
+                        <td class="amount">₹{{ transaction.amount|floatformat:2 }}</td>
+                        <td class="amount">₹{{ transaction.balance_after|floatformat:2 }}</td>
+                        <td>{{ transaction.description|default:"—" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No transactions yet for this account.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

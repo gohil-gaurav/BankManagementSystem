@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Transaction Monitoring{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div>
+            <h1>Transaction Monitoring</h1>
+            <p class="subtitle">View and filter all transactions</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="{% url 'bank:manager_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+            <a href="{% url 'bank:manager_logout' %}" class="btn btn-secondary">Logout</a>
+        </div>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="filter-form">
+        <form method="get">
+            <div class="filter-row">
+                <input 
+                    type="date" 
+                    name="date_from" 
+                    placeholder="From Date"
+                    value="{{ date_from }}"
+                >
+                <input 
+                    type="date" 
+                    name="date_to" 
+                    placeholder="To Date"
+                    value="{{ date_to }}"
+                >
+                <select name="type">
+                    <option value="">All Types</option>
+                    <option value="DEPOSIT" {% if transaction_type == 'DEPOSIT' %}selected{% endif %}>Deposit</option>
+                    <option value="WITHDRAW" {% if transaction_type == 'WITHDRAW' %}selected{% endif %}>Withdraw</option>
+                </select>
+                <select name="status">
+                    <option value="">All Status</option>
+                    <option value="COMPLETED" {% if status_filter == 'COMPLETED' %}selected{% endif %}>Completed</option>
+                    <option value="PENDING" {% if status_filter == 'PENDING' %}selected{% endif %}>Pending</option>
+                    <option value="APPROVED" {% if status_filter == 'APPROVED' %}selected{% endif %}>Approved</option>
+                    <option value="REJECTED" {% if status_filter == 'REJECTED' %}selected{% endif %}>Rejected</option>
+                </select>
+            </div>
+            <div class="filter-row">
+                <input 
+                    type="text" 
+                    name="search" 
+                    placeholder="Search by account number or username..." 
+                    value="{{ search_query }}"
+                >
+            </div>
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                <a href="{% url 'bank:manager_transactions' %}" class="btn btn-secondary">Clear All</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Large Transactions Alert -->
+    {% if large_transactions_count > 0 %}
+    <div class="card" style="background: #fbbf2420; border-color: #fbbf24;">
+        <p style="color: #fbbf24; margin: 0;">
+            <strong>⚠️ Alert:</strong> {{ large_transactions_count }} large transaction(s) detected (₹50,000+)
+        </p>
+    </div>
+    {% endif %}
+
+    <!-- Transactions Table -->
+    <div class="card">
+        <h2>Transactions (Showing {{ transactions.count }} of total)</h2>
+        
+        {% if transactions %}
+        <div class="table-responsive">
+            <table class="transactions-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date & Time</th>
+                        <th>Account</th>
+                        <th>Customer</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Balance After</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr {% if transaction.amount >= 50000 %}style="background: #fbbf2410;"{% endif %}>
+                        <td>#{{ transaction.id }}</td>
+                        <td>{{ transaction.timestamp|date:"M d, Y H:i" }}</td>
+                        <td>{{ transaction.account.account_number }}</td>
+                        <td>{{ transaction.account.user.username }}</td>
+                        <td>
+                            {% if transaction.transaction_type == 'DEPOSIT' %}
+                                <span class="badge badge-success">↓ Deposit</span>
+                            {% else %}
+                                <span class="badge badge-danger">↑ Withdraw</span>
+                            {% endif %}
+                        </td>
+                        <td class="amount">
+                            ₹{{ transaction.amount|floatformat:2 }}
+                            {% if transaction.amount >= 50000 %}
+                                <span style="color: #fbbf24;">⚠️</span>
+                            {% endif %}
+                        </td>
+                        <td class="amount">₹{{ transaction.balance_after|floatformat:2 }}</td>
+                        <td>
+                            {% if transaction.status == 'COMPLETED' %}
+                                <span class="badge badge-success">Completed</span>
+                            {% elif transaction.status == 'PENDING' %}
+                                <span class="badge badge-warning">Pending</span>
+                            {% elif transaction.status == 'APPROVED' %}
+                                <span class="badge badge-success">Approved</span>
+                            {% else %}
+                                <span class="badge badge-danger">Rejected</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'bank:manager_account_detail' transaction.account.id %}" class="btn btn-sm">View Account</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No transactions found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

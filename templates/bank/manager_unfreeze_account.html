@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Unfreeze Account{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="confirmation-box">
+        <h2>Unfreeze Account</h2>
+        
+        <div class="warning" style="background: #4ade8020; border-color: #4ade80; color: #4ade80;">
+            <strong>✓ Confirmation:</strong> You are about to unfreeze this account. The customer will be able to perform transactions again.
+        </div>
+        
+        <div class="account-info-grid" style="margin-bottom: 20px;">
+            <div class="info-item">
+                <span class="info-label">Account Number:</span>
+                <span class="info-value">{{ account.account_number }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Customer:</span>
+                <span class="info-value">{{ account.user.username }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Balance:</span>
+                <span class="info-value">₹{{ account.balance|floatformat:2 }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Current Status:</span>
+                <span class="info-value">
+                    {% if account.status == 'ACTIVE' %}
+                        <span class="status-active">Active</span>
+                    {% else %}
+                        <span class="status-frozen">Frozen</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="action-buttons" style="margin-top: 20px;">
+                <button type="submit" class="btn btn-primary" style="background: #4ade80;">Unfreeze Account</button>
+                <a href="{% url 'bank:manager_account_detail' account.id %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div>
+            <h1>Report Management</h1>
+            <p class="subtitle">View transaction reports and statistics</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="{% url 'bank:manager_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+            <a href="{% url 'bank:manager_logout' %}" class="btn btn-secondary">Logout</a>
+        </div>
+    </div>
+
+    <!-- Daily Report -->
+    <div class="report-section">
+        <h2>Daily Report (Today)</h2>
+        <div class="report-grid">
+            <div class="report-card">
+                <div class="label">Total Transactions</div>
+                <div class="value">{{ today_transactions_count }}</div>
+            </div>
+            <div class="report-card">
+                <div class="label">Total Deposits</div>
+                <div class="value" style="color: #4ade80;">₹{{ today_deposits|floatformat:2 }}</div>
+            </div>
+            <div class="report-card">
+                <div class="label">Total Withdrawals</div>
+                <div class="value" style="color: #ef4444;">₹{{ today_withdrawals|floatformat:2 }}</div>
+            </div>
+            <div class="report-card">
+                <div class="label">Net Flow</div>
+                <div class="value">₹{{ today_deposits|add:"-"|add:today_withdrawals|floatformat:2 }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weekly Report -->
+    <div class="report-section">
+        <h2>Weekly Report (Last 7 Days)</h2>
+        <div class="report-grid">
+            <div class="report-card">
+                <div class="label">Total Transactions</div>
+                <div class="value">{{ week_transactions_count }}</div>
+            </div>
+            <div class="report-card">
+                <div class="label">Total Deposits</div>
+                <div class="value" style="color: #4ade80;">₹{{ week_deposits|floatformat:2 }}</div>
+            </div>
+            <div class="report-card">
+                <div class="label">Total Withdrawals</div>
+                <div class="value" style="color: #ef4444;">₹{{ week_withdrawals|floatformat:2 }}</div>
+            </div>
+            <div class="report-card">
+                <div class="label">Net Flow</div>
+                <div class="value">₹{{ week_deposits|add:"-"|add:week_withdrawals|floatformat:2 }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Report -->
+    <div class="report-section">
+        <h2>Monthly Report (Last 30 Days)</h2>
+        <div class="report-grid">
+            <div class="report-card">
+                <div class="label">Total Transactions</div>
+                <div class="value">{{ month_transactions_count }}</div>
+            </div>
+            <div class="report-card">
+                <div class="label">Total Deposits</div>
+                <div class="value" style="color: #4ade80;">₹{{ month_deposits|floatformat:2 }}</div>
+            </div>
+            <div class="report-card">
+                <div class="label">Total Withdrawals</div>
+                <div class="value" style="color: #ef4444;">₹{{ month_withdrawals|floatformat:2 }}</div>
+            </div>
+            <div class="report-card">
+                <div class="label">Net Flow</div>
+                <div class="value">₹{{ month_deposits|add:"-"|add:month_withdrawals|floatformat:2 }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Card -->
+    <div class="card">
+        <h2>Report Summary</h2>
+        <p style="color: #888; margin-bottom: 20px;">
+            These reports show completed transactions only. Pending, approved, and rejected transactions are not included in the totals.
+        </p>
+        <div class="account-info-grid">
+            <div class="info-item">
+                <span class="info-label">Report Generated:</span>
+                <span class="info-value">{{ manager.user.username }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Generated At:</span>
+                <span class="info-value">{% now "F d, Y H:i" %}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Employee ID:</span>
+                <span class="info-value">{{ manager.employee_id }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}User Details - {{ target_user.username }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div>
+            <h1>User Profile Details</h1>
+            <p class="subtitle">{{ target_user.username }}</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="{% url 'bank:manager_users' %}" class="btn btn-secondary">Back to Users</a>
+            <a href="{% url 'bank:manager_dashboard' %}" class="btn btn-secondary">Dashboard</a>
+        </div>
+    </div>
+
+    <!-- User Information -->
+    <div class="card">
+        <h2>User Information (Read-Only)</h2>
+        <div class="account-info-grid">
+            <div class="info-item">
+                <span class="info-label">Username:</span>
+                <span class="info-value">{{ target_user.username }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Full Name:</span>
+                <span class="info-value">{{ target_user.get_full_name|default:"Not provided" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Email:</span>
+                <span class="info-value">{{ target_user.email|default:"Not provided" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Date Joined:</span>
+                <span class="info-value">{{ target_user.date_joined|date:"F d, Y H:i" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Last Login:</span>
+                <span class="info-value">
+                    {% if target_user.last_login %}
+                        {{ target_user.last_login|date:"F d, Y H:i" }}
+                    {% else %}
+                        Never logged in
+                    {% endif %}
+                </span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Account Status:</span>
+                <span class="info-value">
+                    {% if target_user.is_active %}
+                        <span class="status-active">Active</span>
+                    {% else %}
+                        <span class="status-frozen">Inactive</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bank Account Information -->
+    {% if account %}
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>Bank Account</h2>
+            <a href="{% url 'bank:manager_account_detail' account.id %}" class="btn btn-sm">View Full Account Details</a>
+        </div>
+        <div class="account-info-grid">
+            <div class="info-item">
+                <span class="info-label">Account Number:</span>
+                <span class="info-value">{{ account.account_number }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Balance:</span>
+                <span class="info-value balance-amount">₹{{ account.balance|floatformat:2 }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Account Status:</span>
+                <span class="info-value">
+                    {% if account.status == 'ACTIVE' %}
+                        <span class="status-active">Active</span>
+                    {% else %}
+                        <span class="status-frozen">Frozen</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Created:</span>
+                <span class="info-value">{{ account.created_at|date:"F d, Y" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Last Activity:</span>
+                <span class="info-value">{{ account.last_activity|date:"F d, Y H:i" }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="card">
+        <h2>Recent Transactions (Last 20)</h2>
+        
+        {% if transactions %}
+        <div class="table-responsive">
+            <table class="transactions-table">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Balance After</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.timestamp|date:"M d, Y H:i" }}</td>
+                        <td>
+                            {% if transaction.transaction_type == 'DEPOSIT' %}
+                                <span class="badge badge-success">↓ Deposit</span>
+                            {% else %}
+                                <span class="badge badge-danger">↑ Withdraw</span>
+                            {% endif %}
+                        </td>
+                        <td class="amount">₹{{ transaction.amount|floatformat:2 }}</td>
+                        <td class="amount">₹{{ transaction.balance_after|floatformat:2 }}</td>
+                        <td>
+                            {% if transaction.status == 'COMPLETED' %}
+                                <span class="badge badge-success">Completed</span>
+                            {% elif transaction.status == 'PENDING' %}
+                                <span class="badge badge-warning">Pending</span>
+                            {% elif transaction.status == 'APPROVED' %}
+                                <span class="badge badge-success">Approved</span>
+                            {% else %}
+                                <span class="badge badge-danger">Rejected</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No transactions yet.</p>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="card">
+        <p class="empty-state">This user does not have a bank account.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

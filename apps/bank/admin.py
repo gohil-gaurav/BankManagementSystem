@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account, Transaction
+from .models import Account, Transaction, BankManager, ManagerAction
 
 
 @admin.register(Account)
@@ -39,3 +39,24 @@ class TransactionAdmin(admin.ModelAdmin):
     
     date_hierarchy = 'timestamp'
     # Add date navigation at the top
+
+
+@admin.register(BankManager)
+class BankManagerAdmin(admin.ModelAdmin):
+    """
+    Customize how BankManager appears in Django admin panel
+    """
+    list_display = ['user', 'employee_id', 'phone', 'created_at']
+    search_fields = ['user__username', 'employee_id']
+    readonly_fields = ['created_at']
+
+
+@admin.register(ManagerAction)
+class ManagerActionAdmin(admin.ModelAdmin):
+    """
+    Customize how ManagerAction appears in Django admin panel
+    """
+    list_display = ['manager', 'action_type', 'target_user', 'timestamp']
+    list_filter = ['action_type', 'timestamp']
+    search_fields = ['manager__user__username', 'target_user__username']
+    readonly_fields = ['timestamp']
