@@ -72,14 +72,10 @@ A modern, full-featured bank management system built with Django featuring separ
    python manage.py migrate
    ```
 
-4. **Create demo data (Optional but Recommended):**
+4. **Create a superuser (admin):**
    ```bash
-   python setup_demo_data.py
+   python manage.py createsuperuser
    ```
-   This creates:
-   - 1 Admin account
-   - 1 Manager account
-   - 5 Customer accounts with initial balances
 
 5. **Start the development server:**
    ```bash
@@ -92,35 +88,38 @@ A modern, full-featured bank management system built with Django featuring separ
 
 ---
 
-## 🔐 Demo Credentials
+## 🔐 Login Credentials
 
-After running `setup_demo_data.py`, you can use these credentials:
+### Creating Accounts
 
-### 👑 Administrator (Superuser)
-- **URL:** http://127.0.0.1:8000/users/login/
-- **Username:** `admin`
-- **Password:** `admin123`
+#### 👑 Administrator (Superuser)
+Create using Django command:
+```bash
+python manage.py createsuperuser
+```
+- **Login URL:** http://127.0.0.1:8000/users/login/
 - **Access:** Full system access, admin dashboard, Django admin panel
 
-### 👨‍💼 Bank Manager
-- **URL:** http://127.0.0.1:8000/bank/manager/login/
-- **Username:** `manager`
-- **Password:** `manager123`
-- **Employee ID:** EMP001
+#### 👨‍💼 Bank Manager
+Create using management command:
+```bash
+python manage.py create_manager <username> <password> <employee_id>
+```
+Example:
+```bash
+python manage.py create_manager manager manager123 EMP001
+```
+- **Login URL:** http://127.0.0.1:8000/bank/manager/login/
 - **Access:** Manager dashboard, user/account management, reports
 
-### 👤 Demo Customers
-- **URL:** http://127.0.0.1:8000/users/login/
+Or register via web:
+- **Registration URL:** http://127.0.0.1:8000/bank/manager/register/
 
-| Username | Password | Initial Balance |
-|----------|----------|----------------|
-| `john_doe` | `john123` | ₹50,000.00 |
-| `sarah_smith` | `sarah123` | ₹75,000.00 |
-| `mike_wilson` | `mike123` | ₹30,000.00 |
-| `emma_brown` | `emma123` | ₹1,00,000.00 |
-| `david_jones` | `david123` | ₹25,000.00 |
-
-> **Note:** If you don't run `setup_demo_data.py`, you'll need to create accounts manually using Django commands or the registration pages.
+#### 👤 Customers
+Register via web interface:
+- **Registration URL:** http://127.0.0.1:8000/users/register/
+- **Login URL:** http://127.0.0.1:8000/users/login/
+- **Access:** Personal dashboard, deposit, withdraw, transaction history
 
 ## 📖 Usage Guide
 
@@ -195,7 +194,6 @@ python manage.py create_manager <username> <password> <employee_id>
 ```
 BankManagementSystem/
 ├── 📄 manage.py                      # Django management script
-├── 📄 setup_demo_data.py            # Demo data creation script
 ├── 📄 requirements.txt               # Python dependencies
 ├── 📄 README.md                      # Project documentation
 ├── 📄 .gitignore                     # Git ignore rules
@@ -382,11 +380,6 @@ python manage.py createsuperuser
 ### Creating Manager
 ```bash
 python manage.py create_manager <username> <password> <employee_id>
-```
-
-### Setup Demo Data
-```bash
-python setup_demo_data.py
 ```
 
 ---
