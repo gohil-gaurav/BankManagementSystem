@@ -1,0 +1,516 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Bank Management System{% endblock %}
+
+{% block content %}
+<!-- Admin Header -->
+<div style="background: #141414; padding: 2rem; border-radius: 10px; margin-bottom: 2rem; border: 1px solid #2a2a2a;">
+    <h1 style="margin: 0 0 0.5rem 0; font-size: 2rem;">Admin Dashboard</h1>
+    <p style="margin: 0; color: #888;">Welcome, {{ user.username }}! You have full system access.</p>
+</div>
+
+<!-- Quick Stats Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="info-box">
+        <h3>Total Users</h3>
+        <p style="font-size: 2.5rem;">{{ total_users }}</p>
+    </div>
+    
+    <div class="info-box">
+        <h3>Total Accounts</h3>
+        <p style="font-size: 2.5rem;">{{ total_accounts }}</p>
+    </div>
+    
+    <div class="info-box">
+        <h3>Total Balance</h3>
+        <p style="font-size: 2rem;">₹{{ total_balance|floatformat:2 }}</p>
+    </div>
+    
+    <div class="info-box">
+        <h3>Transactions</h3>
+        <p style="font-size: 2.5rem;">{{ total_transactions }}</p>
+    </div>
+</div>
+
+<!-- Account Status -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="card">
+        <h3>Account Status</h3>
+        <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
+            <div>
+                <p style="color: #4ade80; font-size: 1.5rem; margin: 0;">{{ active_accounts }}</p>
+                <p style="color: #888; margin: 0;">Active</p>
+            </div>
+            <div>
+                <p style="color: #ef4444; font-size: 1.5rem; margin: 0;">{{ frozen_accounts }}</p>
+                <p style="color: #888; margin: 0;">Frozen</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3>Transaction Status</h3>
+        <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
+            <div>
+                <p style="color: #4ade80; font-size: 1.5rem; margin: 0;">{{ completed_transactions }}</p>
+                <p style="color: #888; margin: 0;">Completed</p>
+            </div>
+            <div>
+                <p style="color: #fbbf24; font-size: 1.5rem; margin: 0;">{{ pending_transactions }}</p>
+                <p style="color: #888; margin: 0;">Pending</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3>Money Flow</h3>
+        <div style="margin-top: 1rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="color: #4ade80;">↓ Deposits:</span>
+                <span style="font-weight: 600;">₹{{ total_deposits|floatformat:2 }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #ef4444;">↑ Withdrawals:</span>
+                <span style="font-weight: 600;">₹{{ total_withdrawals|floatformat:2 }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3>System Info</h3>
+        <div style="margin-top: 1rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span>Managers:</span>
+                <span style="font-weight: 600;">{{ total_managers }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>Large Trans:</span>
+                <span style="font-weight: 600;">{{ large_transactions|length }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tab Navigation -->
+<div class="tab-nav" style="margin-bottom: 2rem;">
+    <button class="active" onclick="showTab('overview')">Overview</button>
+    <button onclick="showTab('accounts')">All Accounts</button>
+    <button onclick="showTab('users')">All Users</button>
+    <button onclick="showTab('transactions')">Transactions</button>
+    <button onclick="showTab('actions')">Manager Actions</button>
+</div>
+
+<!-- Overview Tab -->
+<div id="overview-tab" class="tab-content">
+    <!-- Recent Accounts -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2>Recent Accounts</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Account Number</th>
+                    <th>User</th>
+                    <th>Balance</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for account in recent_accounts %}
+                <tr>
+                    <td><strong>{{ account.account_number }}</strong></td>
+                    <td>{{ account.user.username }}</td>
+                    <td><strong>₹{{ account.balance|floatformat:2 }}</strong></td>
+                    <td>
+                        {% if account.status == 'ACTIVE' %}
+                            <span style="color: #4ade80;">- Active</span>
+                        {% else %}
+                            <span style="color: #ef4444;">- Frozen</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ account.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="card">
+        <h2>Recent Transactions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Account</th>
+                    <th>User</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in recent_transactions %}
+                <tr>
+                    <td>#{{ transaction.id }}</td>
+                    <td>{{ transaction.account.account_number }}</td>
+                    <td>{{ transaction.account.user.username }}</td>
+                    <td>
+                        {% if transaction.transaction_type == 'DEPOSIT' %}
+                            <span style="color: #4ade80;">↓ Deposit</span>
+                        {% else %}
+                            <span style="color: #ef4444;">↑ Withdraw</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <strong>₹{{ transaction.amount|floatformat:2 }}</strong>
+                        {% if transaction.amount >= 50000 %}
+                            <span style="color: #fbbf24;">!</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if transaction.status == 'COMPLETED' %}
+                            <span style="color: #4ade80;">- Completed</span>
+                        {% elif transaction.status == 'PENDING' %}
+                            <span style="color: #fbbf24;">- Pending</span>
+                        {% elif transaction.status == 'APPROVED' %}
+                            <span style="color: #4ade80;">- Approved</span>
+                        {% else %}
+                            <span style="color: #ef4444;">- Rejected</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ transaction.timestamp|date:"M d, H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- All Accounts Tab -->
+<div id="accounts-tab" class="tab-content" style="display: none;">
+    <div class="card">
+        <h2>All Accounts Management</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Account Number</th>
+                    <th>User</th>
+                    <th>Balance</th>
+                    <th>Status</th>
+                    <th>Transactions</th>
+                    <th>Last Activity</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for account in all_accounts %}
+                <tr>
+                    <td><strong>{{ account.account_number }}</strong></td>
+                    <td>{{ account.user.username }}</td>
+                    <td><strong>₹{{ account.balance|floatformat:2 }}</strong></td>
+                    <td>
+                        {% if account.status == 'ACTIVE' %}
+                            <span style="color: #4ade80;">- Active</span>
+                        {% else %}
+                            <span style="color: #ef4444;">- Frozen</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ account.transactions.count }}</td>
+                    <td>{{ account.last_activity|date:"M d, H:i" }}</td>
+                    <td>
+                        <a href="/admin/bank/account/{{ account.id }}/change/" 
+                           style="color: #667eea; text-decoration: none; font-weight: 500;">
+                            View Details →
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- All Users Tab -->
+<div id="users-tab" class="tab-content" style="display: none;">
+    <div class="card">
+        <h2>All Users Management</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Account Number</th>
+                    <th>Balance</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in all_users %}
+                <tr>
+                    <td><strong>{{ user.username }}</strong></td>
+                    <td>{{ user.email|default:"—" }}</td>
+                    <td>
+                        {% if user.account %}
+                            {{ user.account.account_number }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.account %}
+                            ₹{{ user.account.balance|floatformat:2 }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.account %}
+                            {% if user.account.status == 'ACTIVE' %}
+                                <span style="color: #4ade80;">- Active</span>
+                            {% else %}
+                                <span style="color: #ef4444;">- Frozen</span>
+                            {% endif %}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                    <td>
+                        <a href="/admin/auth/user/{{ user.id }}/change/" 
+                           style="color: #667eea; text-decoration: none; font-weight: 500;">
+                            View Details →
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Transactions Tab -->
+<div id="transactions-tab" class="tab-content" style="display: none;">
+    <div class="card">
+        <h2>All Transactions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Account</th>
+                    <th>User</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Balance After</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in recent_transactions %}
+                <tr>
+                    <td>#{{ transaction.id }}</td>
+                    <td>{{ transaction.account.account_number }}</td>
+                    <td>{{ transaction.account.user.username }}</td>
+                    <td>
+                        {% if transaction.transaction_type == 'DEPOSIT' %}
+                            <span style="color: #4ade80;">↓ Deposit</span>
+                        {% else %}
+                            <span style="color: #ef4444;">↑ Withdraw</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <strong>₹{{ transaction.amount|floatformat:2 }}</strong>
+                        {% if transaction.amount >= 50000 %}
+                            <span style="color: #fbbf24; font-size: 1.2rem;">!</span>
+                        {% endif %}
+                    </td>
+                    <td>₹{{ transaction.balance_after|floatformat:2 }}</td>
+                    <td>
+                        {% if transaction.status == 'COMPLETED' %}
+                            <span style="color: #4ade80;">- Completed</span>
+                        {% elif transaction.status == 'PENDING' %}
+                            <span style="color: #fbbf24;">- Pending</span>
+                        {% elif transaction.status == 'APPROVED' %}
+                            <span style="color: #4ade80;">- Approved</span>
+                        {% else %}
+                            <span style="color: #ef4444;">- Rejected</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ transaction.timestamp|date:"M d, H:i" }}</td>
+                    <td>
+                        <a href="/admin/bank/transaction/{{ transaction.id }}/change/" 
+                           style="color: #667eea; text-decoration: none; font-weight: 500;">
+                            View →
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        {% if large_transactions %}
+        <div style="margin-top: 2rem; padding: 1rem; background: #1a1a1a; border-left: 4px solid #ffffff; border-radius: 5px;">
+            <h3 style="margin: 0 0 1rem 0; color: #ffffff;">! Large Transactions (≥ ₹50,000)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in large_transactions %}
+                    <tr>
+                        <td>#{{ transaction.id }}</td>
+                        <td>{{ transaction.account.user.username }}</td>
+                        <td>
+                            {% if transaction.transaction_type == 'DEPOSIT' %}
+                                <span style="color: #4ade80;">↓ Deposit</span>
+                            {% else %}
+                                <span style="color: #ef4444;">↑ Withdraw</span>
+                            {% endif %}
+                        </td>
+                        <td><strong style="color: #ffffff;">₹{{ transaction.amount|floatformat:2 }}</strong></td>
+                        <td>{{ transaction.timestamp|date:"M d, H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Manager Actions Tab -->
+<div id="actions-tab" class="tab-content" style="display: none;">
+    <div class="card">
+        <h2>Manager Actions Audit Trail</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Manager</th>
+                    <th>Action Type</th>
+                    <th>Target User</th>
+                    <th>Target Account</th>
+                    <th>Note</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for action in recent_manager_actions %}
+                <tr>
+                    <td>#{{ action.id }}</td>
+                    <td>{{ action.manager.user.username }}</td>
+                    <td>
+                        {% if action.action_type == 'FREEZE_ACCOUNT' %}
+                            <span style="color: #ef4444;">- Freeze Account</span>
+                        {% elif action.action_type == 'UNFREEZE_ACCOUNT' %}
+                            <span style="color: #4ade80;">- Unfreeze Account</span>
+                        {% elif action.action_type == 'APPROVE_TRANSACTION' %}
+                            <span style="color: #4ade80;">- Approve Transaction</span>
+                        {% elif action.action_type == 'REJECT_TRANSACTION' %}
+                            <span style="color: #ef4444;">- Reject Transaction</span>
+                        {% else %}
+                            <span style="color: #888;">- {{ action.action_type }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ action.target_user.username|default:"—" }}</td>
+                    <td>{{ action.target_account.account_number|default:"—" }}</td>
+                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        {{ action.note|truncatewords:10 }}
+                    </td>
+                    <td>{{ action.timestamp|date:"M d, H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Quick Links -->
+<div class="card" style="margin-top: 2rem;">
+    <h2>Quick Links</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+        <a href="/admin/" style="display: block; padding: 1rem 2rem; background: transparent; border: 1px solid #3a3a3a; color: #ffffff; text-align: center; text-decoration: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;">
+            Django Admin Panel →
+        </a>
+        <a href="/admin/bank/account/" style="display: block; padding: 1rem 2rem; background: transparent; border: 1px solid #3a3a3a; color: #ffffff; text-align: center; text-decoration: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;">
+            Manage Accounts →
+        </a>
+        <a href="/admin/bank/transaction/" style="display: block; padding: 1rem 2rem; background: transparent; border: 1px solid #3a3a3a; color: #ffffff; text-align: center; text-decoration: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;">
+            Manage Transactions →
+        </a>
+        <a href="/admin/bank/manageraction/" style="display: block; padding: 1rem 2rem; background: transparent; border: 1px solid #3a3a3a; color: #ffffff; text-align: center; text-decoration: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;">
+            View Audit Trail →
+        </a>
+    </div>
+</div>
+
+<script>
+function showTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.style.display = 'none';
+    });
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.tab-nav button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabName + '-tab').style.display = 'block';
+    
+    // Add active class to clicked button
+    event.target.classList.add('active');
+}
+</script>
+
+<style>
+.tab-nav {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid #2a2a2a;
+    margin-bottom: 2rem;
+}
+
+.tab-nav button {
+    background: none;
+    border: none;
+    color: #ffffff;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-nav button:hover {
+    background: #1a1a1a;
+    color: #667eea;
+}
+
+.tab-nav button.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+}
+
+table {
+    font-size: 0.9rem;
+}
+
+table th {
+    font-size: 0.85rem;
+}
+</style>
+{% endblock %}

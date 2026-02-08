@@ -3,6 +3,19 @@
 {% block title %}Dashboard - Bank Management System{% endblock %}
 
 {% block content %}
+<!-- Frozen Account Warning -->
+{% if account.status == 'FROZEN' %}
+<div class="card" style="background: #ef444420; border: 2px solid #ef4444; margin-bottom: 2rem;">
+    <div style="display: flex; align-items: center; gap: 1rem;">
+        <div style="font-size: 2rem;">⚠️</div>
+        <div>
+            <h3 style="color: #ef4444; margin: 0 0 0.5rem 0;">Account Frozen</h3>
+            <p style="color: #ffffff; margin: 0;">Your account has been frozen by the bank. You cannot perform any transactions. Please contact the bank for assistance.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- Welcome Section -->
 <div class="welcome-section">
     <h2>Welcome back, {{ user.username }}!</h2>
@@ -29,8 +42,14 @@
     </div>
     
     <div class="info-box expense">
-        <h3>Member Since</h3>
-        <p style="font-size: 1.3rem;">{{ account.created_at|date:"M Y" }}</p>
+        <h3>Account Status</h3>
+        <p style="font-size: 1.3rem;">
+            {% if account.status == 'ACTIVE' %}
+                <span style="color: #4ade80;">● Active</span>
+            {% else %}
+                <span style="color: #ef4444;">● Frozen</span>
+            {% endif %}
+        </p>
     </div>
 </div>
 
@@ -38,12 +57,21 @@
 <div class="card">
     <h2>Quick Actions</h2>
     <div class="quick-actions">
-        <a href="{% url 'bank:deposit' %}" class="btn btn-success">
-            Deposit Money
-        </a>
-        <a href="{% url 'bank:withdraw' %}" class="btn btn-danger">
-            Withdraw Money
-        </a>
+        {% if account.status == 'FROZEN' %}
+            <button class="btn btn-success" disabled style="opacity: 0.5; cursor: not-allowed;">
+                Deposit Money (Account Frozen)
+            </button>
+            <button class="btn btn-danger" disabled style="opacity: 0.5; cursor: not-allowed;">
+                Withdraw Money (Account Frozen)
+            </button>
+        {% else %}
+            <a href="{% url 'bank:deposit' %}" class="btn btn-success">
+                Deposit Money
+            </a>
+            <a href="{% url 'bank:withdraw' %}" class="btn btn-danger">
+                Withdraw Money
+            </a>
+        {% endif %}
         <a href="{% url 'bank:transactions' %}" class="btn btn-secondary">
             View All Transactions
         </a>
