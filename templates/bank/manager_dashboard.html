@@ -7,10 +7,9 @@
     <div class="dashboard-header">
         <div>
             <h1>Bank Manager Dashboard</h1>
-            <p class="subtitle">Welcome, {{ manager.user.get_full_name|default:manager.user.username }}</p>
-            <p class="subtitle">Employee ID: {{ manager.employee_id }}</p>
+            <p class="subtitle" style="font-size: 1.1rem; margin-top: 0.5rem;">Welcome, <span style="color: #ffffff; font-weight: 600;">{{ manager.user.get_full_name|default:manager.user.username }}</span></p>
+            <p class="subtitle" style="font-size: 0.9rem; color: #666666; margin-top: 0.25rem;">Employee ID: <span style="color: #999999; font-weight: 500;">{{ manager.employee_id }}</span></p>
         </div>
-        <a href="{% url 'bank:manager_logout' %}" class="btn btn-secondary">Logout</a>
     </div>
 
     <!-- Quick Navigation -->
