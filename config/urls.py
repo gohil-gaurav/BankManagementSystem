@@ -23,5 +23,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("users/", include("apps.users.urls")),  # User registration, login, logout
     path("bank/", include("apps.bank.urls")),    # Bank operations (dashboard, deposit, withdraw)
-    path("", RedirectView.as_view(url="/users/login/", permanent=False)),  # Redirect root to login
+    path("", RedirectView.as_view(url="/users/", permanent=False), name='home'),  # Redirect root to home
 ]

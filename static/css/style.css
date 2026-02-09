@@ -123,6 +123,7 @@ nav a {
     font-size: 0.9rem;
     padding: 0.7rem 1.5rem;
     border-radius: 8px;
+    display: inline-block;
 }
 
 nav a:hover {
@@ -1141,12 +1142,25 @@ table tr:hover {
         background: #1a1a1a;
     }
     
-    nav .logout-btn {
-        background: #1a1a1a !important;
-        border: 1px solid #2a2a2a !important;
-        margin: 1rem 1.5rem;
+    nav .nav-menu .logout-btn {
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        color: #ffffff;
+        margin: 0;
+        border-radius: 0;
+        width: 100%;
+        text-align: left;
+    }
+    
+    nav .nav-menu li:last-child {
+        margin-top: auto;
+        padding: 1rem 1.5rem;
+    }
+    
+    nav .nav-menu li:last-child a {
+        border-radius: 8px;
         text-align: center;
-        border-radius: 8px !important;
+        padding: 0.875rem 1.5rem;
     }
     
     /* Overlay when menu is open */

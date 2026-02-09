@@ -5,6 +5,21 @@ from django.contrib import messages
 from .forms import UserRegistrationForm
 
 
+def home_view(request):
+    """
+    Home/Landing Page View
+    - Shows welcome page with login/register options
+    """
+    if request.user.is_authenticated:
+        # If already logged in, redirect to appropriate dashboard
+        if hasattr(request.user, 'manager_profile'):
+            return redirect('bank:manager_dashboard')
+        else:
+            return redirect('bank:dashboard')
+    
+    return render(request, 'home.html')
+
+
 def register_view(request):
     """
     User Registration View
@@ -85,8 +100,8 @@ def login_view(request):
 def logout_view(request):
     """
     User Logout View
-    - Logs out the user and redirects to login page
+    - Logs out the user and redirects to home page
     """
     logout(request)
-    messages.info(request, 'You have been logged out successfully.')
-    return redirect('users:login')
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('users:home')

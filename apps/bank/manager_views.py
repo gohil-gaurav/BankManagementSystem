@@ -542,8 +542,8 @@ def manager_logout_view(request):
     Manager Logout View
     """
     logout(request)
-    messages.info(request, 'You have been logged out successfully.')
-    return redirect('bank:manager_login')
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('users:login')
 
 
 def manager_register_view(request):
