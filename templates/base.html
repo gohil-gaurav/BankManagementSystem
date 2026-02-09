@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Bank Management System{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=4.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,8 +15,15 @@
     {% if user.is_authenticated %}
     <nav>
         <div class="nav-container">
-            <h1>Bank Management System</h1>
-            <ul>
+            <div class="nav-header">
+                <h1>Bank Management System</h1>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            <ul class="nav-menu" id="navMenu">
                 {% if user.manager_profile %}
                     <!-- Manager Navigation -->
                     <li><a href="{% url 'bank:manager_dashboard' %}">Manager Dashboard</a></li>
@@ -25,14 +32,14 @@
                     <li><a href="{% url 'bank:manager_transactions' %}">Transactions</a></li>
                     <li><a href="{% url 'bank:manager_pending_approvals' %}">Approvals</a></li>
                     <li><a href="{% url 'bank:manager_reports' %}">Reports</a></li>
-                    <li><a href="{% url 'bank:manager_logout' %}" style="background: #1a1a1a; color: #ffffff; padding: 0.6rem 1.2rem; border-radius: 6px; border: 1px solid #2a2a2a;">Logout ({{ user.username }})</a></li>
+                    <li><a href="{% url 'bank:manager_logout' %}" class="logout-btn">Logout ({{ user.username }})</a></li>
                 {% else %}
                     <!-- Customer Navigation -->
                     <li><a href="{% url 'bank:dashboard' %}">Dashboard</a></li>
                     <li><a href="{% url 'bank:transactions' %}">Transactions</a></li>
                     <li><a href="{% url 'bank:deposit' %}">Deposit</a></li>
                     <li><a href="{% url 'bank:withdraw' %}">Withdraw</a></li>
-                    <li><a href="{% url 'users:logout' %}" style="background: #1a1a1a; color: #ffffff; padding: 0.6rem 1.2rem; border-radius: 6px; border: 1px solid #2a2a2a;">Logout ({{ user.username }})</a></li>
+                    <li><a href="{% url 'users:logout' %}" class="logout-btn">Logout ({{ user.username }})</a></li>
                 {% endif %}
             </ul>
         </div>
@@ -61,6 +68,6 @@
     </div>
     {% endif %}
 
-    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/main.js' %}?v=4.0"></script>
 </body>
 </html>
