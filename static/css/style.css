@@ -1215,6 +1215,18 @@ table tr:hover {
         z-index: 999;
     }
     
+    /* CRITICAL FIX: Force white text in mobile menu - highest specificity */
+    @media (max-width: 768px) {
+        nav.nav-menu.active li a,
+        nav .nav-menu.active li a,
+        nav .nav-menu li a,
+        .nav-menu li a,
+        #navMenu li a,
+        #navMenu a {
+            color: #ffffff !important;
+        }
+    }
+    
     /* Container */
     .container {
         padding: 0 1rem;
