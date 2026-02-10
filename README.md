@@ -108,7 +108,7 @@ The project focuses on **backend logic, database relationships, authentication, 
 ---
 
 ## 🗂 Project Structure
-
+```
 BankManagementSystem/
 ├── manage.py
 ├── requirements.txt
@@ -131,7 +131,7 @@ BankManagementSystem/
 │ └── js/
 │
 └── db.sqlite3
-
+```
 ---
 
 ## 🧠 Backend Architecture
