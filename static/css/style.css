@@ -599,6 +599,12 @@ table tr:hover {
     margin-bottom: 2rem;
 }
 
+.auth-card .auth-subtitle {
+    color: #999999;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+}
+
 .auth-divider {
     margin: 2rem 0;
     border: none;
@@ -619,6 +625,32 @@ table tr:hover {
 
 .auth-link a:hover {
     color: #cccccc;
+}
+
+.auth-footer {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #2a2a2a;
+    text-align: center;
+}
+
+.auth-footer p {
+    color: #999999;
+    font-size: 0.9rem;
+    margin: 0.75rem 0;
+}
+
+.auth-footer a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid transparent;
+}
+
+.auth-footer a:hover {
+    color: #ffffff;
+    border-bottom-color: #ffffff;
 }
 
 /* Form Errors */
