@@ -3,161 +3,639 @@
 {% block title %}Dashboard - Bank Management System{% endblock %}
 
 {% block content %}
-<!-- Frozen Account Warning -->
-{% if account.status == 'FROZEN' %}
-<div class="card" style="background: #ef444420; border: 2px solid #ef4444; margin-bottom: 2rem;">
-    <div style="display: flex; align-items: center; gap: 1rem;">
-        <div style="font-size: 2rem;">⚠️</div>
-        <div>
-            <h3 style="color: #ef4444; margin: 0 0 0.5rem 0;">Account Frozen</h3>
-            <p style="color: #ffffff; margin: 0;">Your account has been frozen by the bank. You cannot perform any transactions. Please contact the bank for assistance.</p>
+<style>
+    /* Professional Fintech Dashboard - Refined Design */
+    .fintech-dashboard {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2.5rem;
+        background: #0B1220;
+        min-height: calc(100vh - 80px);
+    }
+    
+    .fintech-header {
+        margin-bottom: 2rem;
+    }
+    
+    .fintech-header h1 {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #F8FAFC;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+    }
+    
+    .fintech-header p {
+        color: #64748B;
+        font-size: 0.95rem;
+        font-weight: 400;
+    }
+    
+    /* Frozen Account Alert */
+    .alert-frozen {
+        background: #1F2937;
+        border: 1px solid #DC2626;
+        border-left: 4px solid #DC2626;
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.1);
+    }
+    
+    .alert-frozen-icon {
+        width: 44px;
+        height: 44px;
+        background: rgba(220, 38, 38, 0.1);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+        color: #DC2626;
+    }
+    
+    .alert-frozen-content h3 {
+        color: #F8FAFC;
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0 0 0.25rem 0;
+    }
+    
+    .alert-frozen-content p {
+        color: #94A3B8;
+        margin: 0;
+        font-size: 0.875rem;
+    }
+    
+    /* Balance Card - Primary Hero */
+    .balance-hero {
+        background: #1F2937;
+        border: 1px solid #374151;
+        border-radius: 16px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .balance-hero:hover {
+        box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3), 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    }
+    
+    .balance-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #3B82F6 0%, #2563EB 100%);
+        border-radius: 16px 16px 0 0;
+    }
+    
+    .balance-hero-label {
+        color: #64748B;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 0.75rem;
+    }
+    
+    .balance-hero-amount {
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: #F8FAFC;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.03em;
+        line-height: 1;
+    }
+    
+    .balance-hero-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1.5rem;
+        border-top: 1px solid #374151;
+    }
+    
+    .balance-hero-account {
+        color: #94A3B8;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    
+    .balance-hero-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(59, 130, 246, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: #F8FAFC;
+    }
+    
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+    
+    .status-active { background: #10B981; }
+    .status-frozen { background: #EF4444; }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: #1F2937;
+        border: 1px solid #374151;
+        border-radius: 12px;
+        padding: 1.75rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-card:hover {
+        border-color: #4B5563;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+    
+    .stat-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+    }
+    
+    .stat-card-title {
+        color: #64748B;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+    
+    .stat-card-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.125rem;
+    }
+    
+    .icon-deposits { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+    .icon-withdrawals { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+    .icon-transactions { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+    
+    .stat-card-value {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: #F8FAFC;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+    }
+    
+    .stat-card-change {
+        font-size: 0.8125rem;
+        color: #64748B;
+        font-weight: 400;
+    }
+    
+    /* Action Buttons */
+    .action-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.625rem;
+        padding: 0.875rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .action-btn-success {
+        background: #10B981;
+        color: #FFFFFF;
+        box-shadow: 0 1px 3px 0 rgba(16, 185, 129, 0.3);
+    }
+    
+    .action-btn-success:hover:not(:disabled) {
+        background: #059669;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.4);
+    }
+    
+    .action-btn-primary {
+        background: #3B82F6;
+        color: #FFFFFF;
+        box-shadow: 0 1px 3px 0 rgba(59, 130, 246, 0.3);
+    }
+    
+    .action-btn-primary:hover:not(:disabled) {
+        background: #2563EB;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
+    }
+    
+    .action-btn-outline {
+        background: transparent;
+        border: 1px solid #374151;
+        color: #E2E8F0;
+    }
+    
+    .action-btn-outline:hover:not(:disabled) {
+        background: #1F2937;
+        border-color: #4B5563;
+        transform: translateY(-1px);
+    }
+    
+    .action-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .action-btn-icon {
+        font-size: 1.125rem;
+    }
+    
+    /* Transactions Section */
+    .transactions-section {
+        background: #1F2937;
+        border: 1px solid #374151;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    }
+    
+    .transactions-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.75rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #374151;
+    }
+    
+    .transactions-header h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #F8FAFC;
+        margin: 0;
+        letter-spacing: -0.01em;
+    }
+    
+    .view-all-link {
+        color: #3B82F6;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        transition: all 0.2s ease;
+    }
+    
+    .view-all-link:hover {
+        color: #60A5FA;
+        gap: 0.625rem;
+    }
+    
+    /* Transaction List */
+    .transaction-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .transaction-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.125rem;
+        background: #0B1220;
+        border: 1px solid #374151;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+    }
+    
+    .transaction-item:hover {
+        border-color: #4B5563;
+        background: #1F2937;
+    }
+    
+    .transaction-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .transaction-icon-wrapper {
+        width: 44px;
+        height: 44px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.125rem;
+        font-weight: 700;
+    }
+    
+    .transaction-deposit {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10B981;
+    }
+    
+    .transaction-withdraw {
+        background: rgba(239, 68, 68, 0.1);
+        color: #EF4444;
+    }
+    
+    .transaction-details h4 {
+        color: #F8FAFC;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        margin: 0 0 0.25rem 0;
+    }
+    
+    .transaction-details p {
+        color: #64748B;
+        font-size: 0.8125rem;
+        margin: 0;
+    }
+    
+    .transaction-right {
+        text-align: right;
+    }
+    
+    .transaction-amount {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+    
+    .transaction-amount-positive {
+        color: #10B981;
+    }
+    
+    .transaction-amount-negative {
+        color: #EF4444;
+    }
+    
+    .transaction-status {
+        display: inline-block;
+        padding: 0.25rem 0.625rem;
+        border-radius: 6px;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .status-completed {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10B981;
+    }
+    
+    /* Empty State */
+    .empty-state-fintech {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+    
+    .empty-state-fintech-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        opacity: 0.2;
+    }
+    
+    .empty-state-fintech h3 {
+        color: #F8FAFC;
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-state-fintech p {
+        color: #64748B;
+        margin-bottom: 2rem;
+        font-size: 0.9375rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .fintech-dashboard {
+            padding: 1.25rem;
+        }
+        
+        .fintech-header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .balance-hero {
+            padding: 2rem 1.5rem;
+        }
+        
+        .balance-hero-amount {
+            font-size: 2.5rem;
+        }
+        
+        .balance-hero-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .action-buttons {
+            grid-template-columns: 1fr;
+        }
+        
+        .transaction-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .transaction-right {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+</style>
+
+<div class="fintech-dashboard">
+    <!-- Header -->
+    <div class="fintech-header">
+        <h1>Welcome back, {{ user.username }}!</h1>
+        <p>Here's what's happening with your account today</p>
+    </div>
+    
+    <!-- Frozen Account Alert -->
+    {% if account.status == 'FROZEN' %}
+    <div class="alert-frozen">
+        <div class="alert-frozen-icon">⚠️</div>
+        <div class="alert-frozen-content">
+            <h3>Account Frozen</h3>
+            <p>Your account has been temporarily frozen. Please contact support for assistance.</p>
         </div>
     </div>
-</div>
-{% endif %}
-
-<!-- Welcome Section -->
-<div class="welcome-section">
-    <h2>Welcome back, {{ user.username }}!</h2>
-    <p class="subtitle">Here's your financial overview</p>
-</div>
-
-<!-- Tab Navigation -->
-<div class="tab-nav">
-    <button class="active">Overview</button>
-    <button>Transactions</button>
-    <button>Analytics</button>
-</div>
-
-<!-- Account Information Cards -->
-<div class="dashboard-grid">
-    <div class="info-box balance">
-        <h3>Account Number</h3>
-        <p style="font-size: 1.5rem;">{{ account.account_number }}</p>
+    {% endif %}
+    
+    <!-- Balance Hero Card -->
+    <div class="balance-hero">
+        <div class="balance-hero-label">Total Balance</div>
+        <div class="balance-hero-amount">₹{{ account.balance|floatformat:2 }}</div>
+        <div class="balance-hero-info">
+            <div class="balance-hero-account">Account: {{ account.account_number }}</div>
+            <div class="balance-hero-status">
+                <span class="status-dot {% if account.status == 'ACTIVE' %}status-active{% else %}status-frozen{% endif %}"></span>
+                {% if account.status == 'ACTIVE' %}Active{% else %}Frozen{% endif %}
+            </div>
+        </div>
     </div>
     
-    <div class="info-box income">
-        <h3>Total Balance</h3>
-        <p>₹{{ account.balance }}</p>
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-card-title">Total Deposits</span>
+                <div class="stat-card-icon icon-deposits">↓</div>
+            </div>
+            <div class="stat-card-value">₹{{ total_deposits|floatformat:2|default:"0.00" }}</div>
+            <div class="stat-card-change">All time deposits</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-card-title">Total Withdrawals</span>
+                <div class="stat-card-icon icon-withdrawals">↑</div>
+            </div>
+            <div class="stat-card-value">₹{{ total_withdrawals|floatformat:2|default:"0.00" }}</div>
+            <div class="stat-card-change">All time withdrawals</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-card-title">Transactions</span>
+                <div class="stat-card-icon icon-transactions">📊</div>
+            </div>
+            <div class="stat-card-value">{{ transaction_count|default:"0" }}</div>
+            <div class="stat-card-change">Total transactions</div>
+        </div>
     </div>
     
-    <div class="info-box expense">
-        <h3>Account Status</h3>
-        <p style="font-size: 1.3rem;">
-            {% if account.status == 'ACTIVE' %}
-                <span style="color: #4ade80;">● Active</span>
-            {% else %}
-                <span style="color: #ef4444;">● Frozen</span>
-            {% endif %}
-        </p>
-    </div>
-</div>
-
-<!-- Quick Actions -->
-<div class="card">
-    <h2>Quick Actions</h2>
-    <div class="quick-actions">
+    <!-- Action Buttons -->
+    <div class="action-buttons">
         {% if account.status == 'FROZEN' %}
-            <button class="btn btn-success" disabled style="opacity: 0.5; cursor: not-allowed;">
-                Deposit Money (Account Frozen)
+            <button class="action-btn action-btn-success" disabled>
+                <span class="action-btn-icon">↓</span>
+                Deposit Money
             </button>
-            <button class="btn btn-danger" disabled style="opacity: 0.5; cursor: not-allowed;">
-                Withdraw Money (Account Frozen)
+            <button class="action-btn action-btn-primary" disabled>
+                <span class="action-btn-icon">↑</span>
+                Withdraw Money
             </button>
         {% else %}
-            <a href="{% url 'bank:deposit' %}" class="btn btn-success">
+            <a href="{% url 'bank:deposit' %}" class="action-btn action-btn-success">
+                <span class="action-btn-icon">↓</span>
                 Deposit Money
             </a>
-            <a href="{% url 'bank:withdraw' %}" class="btn btn-danger">
+            <a href="{% url 'bank:withdraw' %}" class="action-btn action-btn-primary">
+                <span class="action-btn-icon">↑</span>
                 Withdraw Money
             </a>
         {% endif %}
-        <a href="{% url 'bank:transactions' %}" class="btn btn-secondary">
+        <a href="{% url 'bank:transactions' %}" class="action-btn action-btn-outline">
+            <span class="action-btn-icon">📋</span>
             View All Transactions
         </a>
     </div>
-</div>
-
-<!-- Transactions History -->
-<div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-        <h2 style="margin: 0;">Transactions History</h2>
+    
+    <!-- Recent Transactions -->
+    <div class="transactions-section">
+        <div class="transactions-header">
+            <h2>Recent Transactions</h2>
+            {% if recent_transactions %}
+            <a href="{% url 'bank:transactions' %}" class="view-all-link">
+                View All
+                <span>→</span>
+            </a>
+            {% endif %}
+        </div>
+        
         {% if recent_transactions %}
-        <a href="{% url 'bank:transactions' %}" style="color: #ffffff; text-decoration: none; font-size: 0.9rem; font-weight: 500; padding: 0.5rem 1rem; border: 1px solid #3a3a3a; border-radius: 6px; transition: all 0.3s ease;">
-            View All →
-        </a>
+        <div class="transaction-list">
+            {% for transaction in recent_transactions %}
+            <div class="transaction-item">
+                <div class="transaction-left">
+                    <div class="transaction-icon-wrapper {% if transaction.transaction_type == 'DEPOSIT' %}transaction-deposit{% else %}transaction-withdraw{% endif %}">
+                        {% if transaction.transaction_type == 'DEPOSIT' %}↓{% else %}↑{% endif %}
+                    </div>
+                    <div class="transaction-details">
+                        <h4>{% if transaction.transaction_type == 'DEPOSIT' %}Deposit{% else %}Withdrawal{% endif %}</h4>
+                        <p>{{ transaction.timestamp|date:"M d, Y • h:i A" }}</p>
+                    </div>
+                </div>
+                <div class="transaction-right">
+                    <div class="transaction-amount {% if transaction.transaction_type == 'DEPOSIT' %}transaction-amount-positive{% else %}transaction-amount-negative{% endif %}">
+                        {% if transaction.transaction_type == 'DEPOSIT' %}+{% else %}-{% endif %}₹{{ transaction.amount|floatformat:2 }}
+                    </div>
+                    <span class="transaction-status status-completed">Completed</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state-fintech">
+            <div class="empty-state-fintech-icon">📊</div>
+            <h3>No transactions yet</h3>
+            <p>Start by making your first deposit to see your transaction history here</p>
+            {% if account.status != 'FROZEN' %}
+            <a href="{% url 'bank:deposit' %}" class="action-btn action-btn-success">
+                <span class="action-btn-icon">↓</span>
+                Make Your First Deposit
+            </a>
+            {% endif %}
+        </div>
         {% endif %}
     </div>
-    
-    {% if recent_transactions %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for transaction in recent_transactions %}
-                <tr>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div class="transaction-icon {% if transaction.transaction_type == 'DEPOSIT' %}deposit{% else %}withdraw{% endif %}">
-                                {% if transaction.transaction_type == 'DEPOSIT' %}
-                                    ↓
-                                {% else %}
-                                    ↑
-                                {% endif %}
-                            </div>
-                            <div>
-                                <div style="font-weight: 600; margin-bottom: 0.25rem;">
-                                    {% if transaction.transaction_type == 'DEPOSIT' %}
-                                        Deposit
-                                    {% else %}
-                                        Withdrawal
-                                    {% endif %}
-                                </div>
-                                <div style="font-size: 0.85rem; color: #666666;">
-                                    {{ transaction.description|default:"Bank transaction" }}
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        {% if transaction.transaction_type == 'DEPOSIT' %}
-                            <span style="color: #ffffff;">Credit</span>
-                        {% else %}
-                            <span style="color: #cccccc;">Debit</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <div style="margin-bottom: 0.25rem;">{{ transaction.timestamp|date:"M d, Y" }}</div>
-                        <div style="font-size: 0.85rem; color: #666666;">{{ transaction.timestamp|date:"h:i A" }}</div>
-                    </td>
-                    <td>
-                        {% if transaction.transaction_type == 'DEPOSIT' %}
-                            <span class="credit" style="font-size: 1.05rem;">+₹{{ transaction.amount }}</span>
-                        {% else %}
-                            <span class="debit" style="font-size: 1.05rem;">-₹{{ transaction.amount }}</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <span class="status-badge status-completed">Completed</span>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <div class="empty-state">
-            <div class="empty-state-icon">📊</div>
-            <p>No transactions yet. Start by making your first deposit!</p>
-            <br>
-            <a href="{% url 'bank:deposit' %}" class="btn btn-success">Make a Deposit</a>
-        </div>
-    {% endif %}
 </div>
 {% endblock %}

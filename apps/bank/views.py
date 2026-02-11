@@ -12,6 +12,8 @@ def dashboard_view(request):
     Dashboard View - Shows account information
     @login_required ensures only logged-in users can access
     """
+    from django.db.models import Sum
+    
     # If user is a manager, redirect to manager dashboard
     if hasattr(request.user, 'manager_profile'):
         return redirect('bank:manager_dashboard')
@@ -28,9 +30,25 @@ def dashboard_view(request):
     
     recent_transactions = account.transactions.all()[:5]  # Last 5 transactions
     
+    # Calculate statistics for fintech dashboard
+    total_deposits = account.transactions.filter(
+        transaction_type='DEPOSIT',
+        status='COMPLETED'
+    ).aggregate(Sum('amount'))['amount__sum'] or 0
+    
+    total_withdrawals = account.transactions.filter(
+        transaction_type='WITHDRAW',
+        status='COMPLETED'
+    ).aggregate(Sum('amount'))['amount__sum'] or 0
+    
+    transaction_count = account.transactions.count()
+    
     context = {
         'account': account,
         'recent_transactions': recent_transactions,
+        'total_deposits': total_deposits,
+        'total_withdrawals': total_withdrawals,
+        'transaction_count': transaction_count,
     }
     return render(request, 'bank/dashboard.html', context)
 
