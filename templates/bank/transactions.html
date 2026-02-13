@@ -3,88 +3,656 @@
 {% block title %}Transactions - Bank Management System{% endblock %}
 
 {% block content %}
-<div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <div>
-            <h2 style="margin: 0;">Transaction History</h2>
-            <p style="color: #999999; margin-top: 0.5rem;">View all your banking transactions</p>
-        </div>
-        <a href="{% url 'bank:dashboard' %}" class="btn btn-secondary">
-            ← Back to Dashboard
-        </a>
-    </div>
+<style>
+    /* Page Header */
+    .page-header {
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
     
-    {% if transactions %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Transaction</th>
-                    <th>Type</th>
-                    <th>Date & Time</th>
-                    <th>Amount</th>
-                    <th>Balance After</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for transaction in transactions %}
-                <tr>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
-                            <div class="transaction-icon {% if transaction.transaction_type == 'DEPOSIT' %}deposit{% else %}withdraw{% endif %}">
-                                {% if transaction.transaction_type == 'DEPOSIT' %}
-                                    ↓
-                                {% else %}
-                                    ↑
-                                {% endif %}
-                            </div>
-                            <div>
-                                <div style="font-weight: 600;">
-                                    {% if transaction.transaction_type == 'DEPOSIT' %}
-                                        Deposit
-                                    {% else %}
-                                        Withdrawal
-                                    {% endif %}
-                                </div>
-                                <div style="font-size: 0.8rem; color: #666666;">
-                                    {{ transaction.description|default:"Bank transaction" }}
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        {% if transaction.transaction_type == 'DEPOSIT' %}
-                            <span style="color: #ffffff; font-weight: 600;">Credit</span>
-                        {% else %}
-                            <span style="color: #cccccc; font-weight: 600;">Debit</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <div>{{ transaction.timestamp|date:"M d, Y" }}</div>
-                        <div style="font-size: 0.8rem; color: #666666;">{{ transaction.timestamp|date:"h:i A" }}</div>
-                    </td>
-                    <td>
-                        {% if transaction.transaction_type == 'DEPOSIT' %}
-                            <span class="credit" style="font-size: 1.1rem;">+₹{{ transaction.amount }}</span>
-                        {% else %}
-                            <span class="debit" style="font-size: 1.1rem;">-₹{{ transaction.amount }}</span>
-                        {% endif %}
-                    </td>
-                    <td style="font-weight: 600;">₹{{ transaction.balance_after }}</td>
-                    <td>
-                        <span class="status-badge status-completed">Completed</span>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <div class="empty-state">
-            <div class="empty-state-icon" style="font-size: 3rem; opacity: 0.3;">—</div>
-            <p>No transactions yet. Start by making your first deposit!</p>
-            <br>
-            <a href="{% url 'bank:deposit' %}" class="btn btn-success">Make a Deposit</a>
+    .page-header-left h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0 0 0.5rem 0;
+    }
+    
+    .page-header-left p {
+        color: #6B7280;
+        font-size: 0.875rem;
+        margin: 0;
+    }
+    
+    /* Stats Cards */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: #FFFFFF;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.2s;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+    
+    .stat-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .stat-card-title {
+        font-size: 0.875rem;
+        color: #6B7280;
+        font-weight: 500;
+    }
+    
+    .stat-card-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+    
+    .icon-total { background: #DBEAFE; color: #3B82F6; }
+    .icon-income { background: #D1FAE5; color: #10B981; }
+    .icon-expense { background: #FEE2E2; color: #EF4444; }
+    
+    .stat-card-value {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 0.25rem;
+    }
+    
+    .stat-card-label {
+        font-size: 0.75rem;
+        color: #9CA3AF;
+    }
+    
+    /* Filter Bar */
+    .filter-bar {
+        background: #FFFFFF;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .filter-group {
+        flex: 1;
+    }
+    
+    .filter-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #6B7280;
+        margin-bottom: 0.5rem;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .filter-select {
+        width: 100%;
+        padding: 0.625rem 1rem;
+        border: 1px solid #E5E7EB;
+        border-radius: 10px;
+        font-size: 0.875rem;
+        color: #111827;
+        background: #FFFFFF;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .filter-select:focus {
+        outline: none;
+        border-color: #3B82F6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .filter-btn {
+        padding: 0.625rem 1.5rem;
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 1.5rem;
+    }
+    
+    .filter-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    
+    /* Transactions Table Card */
+    .transactions-card {
+        background: #FFFFFF;
+        border-radius: 16px;
+        padding: 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+    
+    .transactions-card-header {
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid #F3F4F6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .transactions-card-header h2 {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0;
+    }
+    
+    .transaction-count {
+        font-size: 0.875rem;
+        color: #6B7280;
+        background: #F3F4F6;
+        padding: 0.375rem 0.875rem;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    /* Transaction Table */
+    .transaction-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .transaction-table thead th {
+        text-align: left;
+        padding: 1rem 2rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #6B7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: #F9FAFB;
+        border-bottom: 1px solid #E5E7EB;
+    }
+    
+    .transaction-table tbody tr {
+        border-bottom: 1px solid #F3F4F6;
+        transition: all 0.2s;
+    }
+    
+    .transaction-table tbody tr:hover {
+        background: #F9FAFB;
+    }
+    
+    .transaction-table tbody tr:last-child {
+        border-bottom: none;
+    }
+    
+    .transaction-table tbody td {
+        padding: 1.25rem 2rem;
+        font-size: 0.875rem;
+    }
+    
+    .transaction-type {
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+    }
+    
+    .transaction-type-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.125rem;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+    
+    .transaction-deposit {
+        background: #D1FAE5;
+        color: #10B981;
+    }
+    
+    .transaction-withdraw {
+        background: #FEE2E2;
+        color: #EF4444;
+    }
+    
+    .transaction-type-text {
+        font-weight: 600;
+        color: #111827;
+    }
+    
+    .transaction-date {
+        color: #6B7280;
+    }
+    
+    .transaction-time {
+        font-size: 0.75rem;
+        color: #9CA3AF;
+        display: block;
+        margin-top: 0.25rem;
+    }
+    
+    .transaction-amount {
+        font-weight: 700;
+        font-size: 1rem;
+    }
+    
+    .transaction-amount-positive {
+        color: #10B981;
+    }
+    
+    .transaction-amount-negative {
+        color: #EF4444;
+    }
+    
+    .transaction-balance {
+        font-weight: 600;
+        color: #111827;
+    }
+    
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.375rem 0.875rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .status-completed {
+        background: #D1FAE5;
+        color: #059669;
+    }
+    
+    .status-completed::before {
+        content: '●';
+        font-size: 0.5rem;
+    }
+    
+    .download-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: #F3F4F6;
+        color: #6B7280;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    
+    .download-btn:hover {
+        background: #3B82F6;
+        color: #FFFFFF;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+    
+    .empty-state-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        background: #F3F4F6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+    }
+    
+    .empty-state h3 {
+        color: #111827;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-state p {
+        color: #6B7280;
+        margin-bottom: 2rem;
+        font-size: 0.9375rem;
+    }
+    
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+        color: #FFFFFF;
+        padding: 0.875rem 1.75rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+    }
+    
+    /* Pagination */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 2rem;
+    }
+    
+    .pagination-btn {
+        padding: 0.5rem 1rem;
+        border: 1px solid #E5E7EB;
+        background: #FFFFFF;
+        color: #6B7280;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .pagination-btn:hover {
+        background: #F9FAFB;
+        border-color: #3B82F6;
+        color: #3B82F6;
+    }
+    
+    .pagination-btn.active {
+        background: #3B82F6;
+        color: #FFFFFF;
+        border-color: #3B82F6;
+    }
+</style>
+
+<div class="dashboard-layout">
+    <!-- Customer Sidebar -->
+    {% include 'includes/customer_sidebar.html' %}
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-left">
+                <h1>Transaction History</h1>
+                <p>View and manage all your banking transactions</p>
+            </div>
         </div>
-    {% endif %}
+        
+        <!-- Stats Row -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">Total Transactions</span>
+                    <div class="stat-card-icon icon-total">💳</div>
+                </div>
+                <div class="stat-card-value">{{ transactions.count }}</div>
+                <div class="stat-card-label">All time</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">Total Income</span>
+                    <div class="stat-card-icon icon-income">↓</div>
+                </div>
+                <div class="stat-card-value">₹{{ total_deposits|floatformat:0|default:"0" }}</div>
+                <div class="stat-card-label">Deposits</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">Total Expenses</span>
+                    <div class="stat-card-icon icon-expense">↑</div>
+                </div>
+                <div class="stat-card-value">₹{{ total_withdrawals|floatformat:0|default:"0" }}</div>
+                <div class="stat-card-label">Withdrawals</div>
+            </div>
+        </div>
+        
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label class="filter-label">Type</label>
+                <select class="filter-select" id="filterType">
+                    <option value="">All Transactions</option>
+                    <option value="DEPOSIT">Deposits</option>
+                    <option value="WITHDRAW">Withdrawals</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Date Range</label>
+                <select class="filter-select" id="filterDate">
+                    <option value="">All Time</option>
+                    <option value="today">Today</option>
+                    <option value="7days">Last 7 Days</option>
+                    <option value="30days">Last 30 Days</option>
+                    <option value="thismonth">This Month</option>
+                    <option value="lastmonth">Last Month</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Status</label>
+                <select class="filter-select" id="filterStatus">
+                    <option value="">All Status</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="REJECTED">Failed</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <button class="filter-btn" onclick="applyFilters()">Apply Filters</button>
+            </div>
+        </div>
+        
+        <!-- Transactions Table -->
+        <div class="transactions-card">
+            <div class="transactions-card-header">
+                <h2>All Transactions</h2>
+                <span class="transaction-count">{{ transactions.count }} transactions</span>
+            </div>
+            
+            {% if transactions %}
+                <table class="transaction-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Date & Time</th>
+                            <th>Amount</th>
+                            <th>Balance After</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in transactions %}
+                        <tr>
+                            <td>
+                                <div class="transaction-type">
+                                    <div class="transaction-type-icon {% if transaction.transaction_type == 'DEPOSIT' %}transaction-deposit{% else %}transaction-withdraw{% endif %}">
+                                        {% if transaction.transaction_type == 'DEPOSIT' %}↓{% else %}↑{% endif %}
+                                    </div>
+                                    <span class="transaction-type-text">
+                                        {% if transaction.transaction_type == 'DEPOSIT' %}Deposit{% else %}Withdrawal{% endif %}
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="transaction-date">
+                                    {{ transaction.timestamp|date:"M d, Y" }}
+                                    <span class="transaction-time">{{ transaction.timestamp|date:"h:i A" }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="transaction-amount {% if transaction.transaction_type == 'DEPOSIT' %}transaction-amount-positive{% else %}transaction-amount-negative{% endif %}">
+                                    {% if transaction.transaction_type == 'DEPOSIT' %}+{% else %}-{% endif %}₹{{ transaction.amount|floatformat:2 }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="transaction-balance">₹{{ transaction.balance_after|floatformat:2 }}</span>
+                            </td>
+                            <td>
+                                <span class="status-badge status-completed">Completed</span>
+                            </td>
+                            <td>
+                                <a href="{% url 'bank:download_transaction_pdf' transaction.id %}" class="download-btn" title="Download Receipt">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">📊</div>
+                    <h3>No transactions yet</h3>
+                    <p>Start by making your first deposit to see your transaction history here</p>
+                    <a href="{% url 'bank:deposit' %}" class="btn-primary">
+                        <span>+</span>
+                        Make a Deposit
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </main>
 </div>
+
+<script>
+// Filter functionality
+function applyFilters() {
+    const filterType = document.getElementById('filterType').value;
+    const filterDate = document.getElementById('filterDate').value;
+    const filterStatus = document.getElementById('filterStatus').value;
+    
+    const rows = document.querySelectorAll('.transaction-table tbody tr');
+    let visibleCount = 0;
+    
+    rows.forEach(row => {
+        let showRow = true;
+        
+        // Filter by type
+        if (filterType) {
+            const typeText = row.querySelector('.transaction-type-text').textContent.trim();
+            const isDeposit = typeText === 'Deposit';
+            const isWithdraw = typeText === 'Withdrawal';
+            
+            if (filterType === 'DEPOSIT' && !isDeposit) showRow = false;
+            if (filterType === 'WITHDRAW' && !isWithdraw) showRow = false;
+        }
+        
+        // Filter by date (basic implementation - can be enhanced)
+        if (filterDate && showRow) {
+            const dateText = row.querySelector('.transaction-date').textContent.trim();
+            const transactionDate = new Date(dateText);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            switch(filterDate) {
+                case 'today':
+                    const todayDate = new Date();
+                    todayDate.setHours(0, 0, 0, 0);
+                    if (transactionDate < todayDate) showRow = false;
+                    break;
+                case '7days':
+                    const sevenDaysAgo = new Date(today);
+                    sevenDaysAgo.setDate(today.getDate() - 7);
+                    if (transactionDate < sevenDaysAgo) showRow = false;
+                    break;
+                case '30days':
+                    const thirtyDaysAgo = new Date(today);
+                    thirtyDaysAgo.setDate(today.getDate() - 30);
+                    if (transactionDate < thirtyDaysAgo) showRow = false;
+                    break;
+                case 'thismonth':
+                    if (transactionDate.getMonth() !== today.getMonth() || 
+                        transactionDate.getFullYear() !== today.getFullYear()) {
+                        showRow = false;
+                    }
+                    break;
+                case 'lastmonth':
+                    const lastMonth = new Date(today);
+                    lastMonth.setMonth(today.getMonth() - 1);
+                    if (transactionDate.getMonth() !== lastMonth.getMonth() || 
+                        transactionDate.getFullYear() !== lastMonth.getFullYear()) {
+                        showRow = false;
+                    }
+                    break;
+            }
+        }
+        
+        // Filter by status
+        if (filterStatus && showRow) {
+            const statusText = row.querySelector('.status-badge').textContent.trim();
+            if (!statusText.toLowerCase().includes(filterStatus.toLowerCase())) {
+                showRow = false;
+            }
+        }
+        
+        // Show/hide row
+        if (showRow) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    // Update transaction count
+    const countElement = document.querySelector('.transaction-count');
+    if (countElement) {
+        countElement.textContent = `${visibleCount} transaction${visibleCount !== 1 ? 's' : ''}`;
+    }
+}
+
+// Reset filters on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Add change event listeners to auto-apply filters
+    document.getElementById('filterType').addEventListener('change', applyFilters);
+    document.getElementById('filterDate').addEventListener('change', applyFilters);
+    document.getElementById('filterStatus').addEventListener('change', applyFilters);
+});
+</script>
 {% endblock %}

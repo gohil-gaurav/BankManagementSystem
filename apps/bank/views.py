@@ -254,12 +254,29 @@ def withdraw_view(request):
 @login_required
 def transactions_view(request):
     """Transaction History View - Shows all transactions"""
+    from django.db.models import Sum
+    
     account = request.user.account
-    transactions = account.transactions.all()
+    transactions = account.transactions.all().order_by('-timestamp')
+    
+    # Calculate statistics - include all completed/approved transactions
+    total_deposits = account.transactions.filter(
+        transaction_type='DEPOSIT'
+    ).exclude(
+        status='REJECTED'
+    ).aggregate(Sum('amount'))['amount__sum'] or 0
+    
+    total_withdrawals = account.transactions.filter(
+        transaction_type='WITHDRAW'
+    ).exclude(
+        status='REJECTED'
+    ).aggregate(Sum('amount'))['amount__sum'] or 0
     
     context = {
         'transactions': transactions,
         'account': account,
+        'total_deposits': total_deposits,
+        'total_withdrawals': total_withdrawals,
     }
     return render(request, 'bank/transactions.html', context)
 

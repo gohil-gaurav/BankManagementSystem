@@ -3,75 +3,335 @@
 {% block title %}Deposit - Bank Management System{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width: 600px; margin: 0 auto;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-        <div>
-            <h2 style="margin: 0;">Deposit Money</h2>
-            <p style="color: #999999; margin-top: 0.5rem;">Add funds to your account</p>
-        </div>
-        <a href="{% url 'bank:dashboard' %}" class="btn btn-secondary">
-            ← Back
-        </a>
-    </div>
+<style>
+    /* Hide default navigation */
+    nav { display: none !important; }
+    .container { padding: 0 !important; max-width: none !important; margin: 0 !important; }
+    html, body { margin: 0; padding: 0; overflow: hidden; height: 100%; }
+    body { background: #F3F4F6 !important; }
+    body::before { display: none; }
     
-    <!-- Account Info -->
-    <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid #2a2a2a;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <p style="color: #999999; font-size: 0.85rem; margin-bottom: 0.5rem;">Current Balance</p>
-                <p style="font-size: 1.75rem; font-weight: 700; color: #ffffff; margin: 0;">₹{{ account.balance }}</p>
+    .dashboard-layout { display: flex; height: 100vh; width: 100%; overflow: hidden; background: #F3F4F6; }
+    
+    /* Sidebar */
+    .sidebar {
+        width: 310px;
+        background: linear-gradient(180deg, #0A1628 0%, #1E293B 50%, #0F172A 100%);
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        display: flex !important;
+        flex-direction: column;
+        z-index: 10000;
+        border-radius: 0 80px 0 0;
+        box-shadow: 4px 0 40px rgba(0, 0, 0, 0.5);
+        overflow-y: auto;
+    }
+    
+    .sidebar::-webkit-scrollbar { display: none; }
+    .sidebar-logo { padding: 3rem 2rem 1.75rem 2rem; border-bottom: 1px solid rgba(148, 163, 184, 0.1); }
+    .sidebar-logo h2 { color: #FFFFFF !important; font-size: 1.75rem; font-weight: 700; margin: 0; }
+    .sidebar-logo p { color: #94A3B8 !important; font-size: 0.875rem; margin: 0.625rem 0 0 0; }
+    
+    .sidebar-user-top {
+        display: flex !important;
+        align-items: center;
+        gap: 1rem;
+        color: #FFFFFF !important;
+        padding: 1.25rem 2rem;
+        margin: 1.5rem 0;
+        background: rgba(51, 65, 85, 0.3);
+        border-top: 1px solid rgba(148, 163, 184, 0.1);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    }
+    
+    .sidebar-nav { flex: 1; padding: 2rem 1.5rem; display: flex !important; flex-direction: column; gap: 0.625rem; }
+    
+    .sidebar-nav-item {
+        display: flex !important;
+        align-items: center;
+        gap: 1.125rem;
+        padding: 1rem 1.25rem;
+        color: rgba(203, 213, 225, 0.8) !important;
+        text-decoration: none;
+        border-radius: 14px;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+    
+    .sidebar-nav-icon { font-size: 1.375rem; width: 26px; text-align: center; }
+    .sidebar-nav-item:hover { background: rgba(51, 65, 85, 0.4) !important; color: #F1F5F9 !important; transform: translateX(6px); }
+    
+    .sidebar-nav-item.active {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.15) 100%) !important;
+        color: #60A5FA !important;
+        box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        border-left: 4px solid #3B82F6;
+        padding-left: calc(1.25rem - 4px);
+    }
+    
+    .sidebar-promo-card {
+        margin: 0 1.5rem 1.5rem 1.5rem;
+        padding: 1.5rem;
+        background: rgba(51, 65, 85, 0.3);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 18px;
+        text-align: center;
+    }
+    
+    .sidebar-promo-card p { color: #E2E8F0; font-size: 0.9375rem; margin: 0 0 1rem 0; }
+    
+    .sidebar-promo-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.625rem;
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+    }
+    
+    .sidebar-footer { padding: 1.5rem; border-top: 1px solid rgba(148, 163, 184, 0.1); }
+    
+    .sidebar-user-avatar {
+        width: 46px;
+        height: 46px;
+        border-radius: 13px;
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: #FFFFFF;
+        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.5);
+    }
+    
+    .sidebar-user-info h4 { margin: 0; font-size: 0.9375rem; font-weight: 600; color: #F8FAFC !important; }
+    .sidebar-user-info p { margin: 0.25rem 0 0 0; font-size: 0.8125rem; color: #94A3B8 !important; }
+    
+    /* Main Content */
+    .main-content { margin-left: 310px; flex: 1; height: 100vh; overflow-y: auto; padding: 2rem; background: #F3F4F6; }
+    
+    .page-header { margin-bottom: 2rem; }
+    .page-header h1 { font-size: 1.875rem; font-weight: 700; color: #111827; margin: 0 0 0.5rem 0; }
+    .page-header p { color: #6B7280; font-size: 0.875rem; margin: 0; }
+    
+    /* Form Card */
+    .form-card {
+        background: #FFFFFF;
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .balance-display {
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+        padding: 2rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        color: #FFFFFF;
+    }
+    
+    .balance-display .label { font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem; }
+    .balance-display .amount { font-size: 2.5rem; font-weight: 700; margin: 0; }
+    .balance-display .account-num { font-size: 0.875rem; opacity: 0.8; margin-top: 1rem; }
+    
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #D1D5DB;
+        border-radius: 10px;
+        font-size: 0.9375rem;
+        transition: all 0.2s;
+        background: #FFFFFF;
+        color: #111827;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #3B82F6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .btn-submit {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+    }
+    
+    .info-box {
+        background: #F0F9FF;
+        border: 1px solid #BAE6FD;
+        border-left: 4px solid #3B82F6;
+        padding: 1.25rem;
+        border-radius: 10px;
+        margin-top: 2rem;
+    }
+    
+    .info-box p {
+        color: #1E40AF;
+        font-size: 0.875rem;
+        margin: 0;
+    }
+    
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 0.5rem 0 0 0;
+        color: #EF4444;
+        font-size: 0.8125rem;
+    }
+</style>
+
+<div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <h2>BankMS</h2>
+            <p>Management System</p>
+        </div>
+        
+        <div class="sidebar-user-top">
+            <div class="sidebar-user-avatar">
+                {{ user.username|slice:":1"|upper }}
             </div>
-            <div style="text-align: right;">
-                <p style="color: #999999; font-size: 0.85rem; margin-bottom: 0.5rem;">Account Number</p>
-                <p style="font-size: 1rem; font-weight: 600; color: #ffffff; margin: 0;">{{ account.account_number }}</p>
+            <div class="sidebar-user-info">
+                <h4>{{ user.username }}</h4>
+                <p>Customer</p>
             </div>
         </div>
-    </div>
-    
-    <!-- Deposit Form -->
-    <form method="post">
-        {% csrf_token %}
         
-        <!-- Amount Field -->
-        <div class="form-group">
-            <label for="{{ form.amount.id_for_label }}">{{ form.amount.label }}</label>
-            {{ form.amount }}
-            {% if form.amount.errors %}
-                <ul class="errorlist">
-                    {% for error in form.amount.errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-            {% if form.amount.help_text %}
-                <small class="help-text">{{ form.amount.help_text }}</small>
-            {% endif %}
+        <nav class="sidebar-nav">
+            <a href="{% url 'bank:dashboard' %}" class="sidebar-nav-item">
+                <span class="sidebar-nav-icon">🏠</span>
+                Home
+            </a>
+            <a href="{% url 'bank:dashboard' %}" class="sidebar-nav-item">
+                <span class="sidebar-nav-icon">📊</span>
+                Dashboard
+            </a>
+            <a href="{% url 'bank:transactions' %}" class="sidebar-nav-item">
+                <span class="sidebar-nav-icon">💳</span>
+                Transactions
+            </a>
+            <a href="{% url 'bank:deposit' %}" class="sidebar-nav-item active">
+                <span class="sidebar-nav-icon">↓</span>
+                Deposit
+            </a>
+            <a href="{% url 'bank:withdraw' %}" class="sidebar-nav-item">
+                <span class="sidebar-nav-icon">↑</span>
+                Withdraw
+            </a>
+            <a href="#" class="sidebar-nav-item">
+                <span class="sidebar-nav-icon">👤</span>
+                Profile
+            </a>
+            <a href="#" class="sidebar-nav-item">
+                <span class="sidebar-nav-icon">⚙️</span>
+                Settings
+            </a>
+        </nav>
+        
+        <div class="sidebar-promo-card">
+            <p>Just click and go<br><strong>PRO version</strong></p>
+            <button class="sidebar-promo-btn">
+                <span>✨</span>
+                Upgrade Now
+            </button>
         </div>
         
-        <!-- Description Field -->
-        <div class="form-group">
-            <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
-            {{ form.description }}
-            {% if form.description.errors %}
-                <ul class="errorlist">
-                    {% for error in form.description.errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+        <div class="sidebar-footer">
+            <a href="{% url 'users:logout' %}" class="sidebar-nav-item" style="margin: 0;">
+                <span class="sidebar-nav-icon">🚪</span>
+                Logout
+            </a>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Deposit Money</h1>
+            <p>Add funds to your account</p>
         </div>
         
-        <!-- Submit Button -->
-        <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 1rem;">
-            Deposit Money
-        </button>
-    </form>
-    
-    <!-- Info Box -->
-    <div style="background: #0a0a0a; padding: 1.5rem; border-radius: 8px; margin-top: 2rem; border: 2px dashed #2a2a2a;">
-        <p style="color: #999999; font-size: 0.9rem; margin: 0;">
-            <strong style="color: #ffffff;">Note:</strong> Deposits are processed instantly. Your new balance will be reflected immediately after the transaction.
-        </p>
-    </div>
+        <div class="form-card">
+            <!-- Balance Display -->
+            <div class="balance-display">
+                <div class="label">Current Balance</div>
+                <div class="amount">₹{{ account.balance|floatformat:2 }}</div>
+                <div class="account-num">Account: {{ account.account_number }}</div>
+            </div>
+            
+            <!-- Deposit Form -->
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.amount.id_for_label }}">{{ form.amount.label }}</label>
+                    {{ form.amount }}
+                    {% if form.amount.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.amount.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.description.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                
+                <button type="submit" class="btn-submit">Deposit Money</button>
+            </form>
+            
+            <div class="info-box">
+                <p><strong>Note:</strong> Deposits are processed instantly. Your new balance will be reflected immediately after the transaction.</p>
+            </div>
+        </div>
+    </main>
 </div>
 {% endblock %}

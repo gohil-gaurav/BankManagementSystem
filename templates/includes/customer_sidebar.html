@@ -1,0 +1,59 @@
+<!-- Customer Sidebar Component -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <h2>BankMS</h2>
+        <p>Management System</p>
+    </div>
+    
+    <div class="sidebar-user-top">
+        <div class="sidebar-user-avatar">
+            {{ user.username|slice:":1"|upper }}
+        </div>
+        <div class="sidebar-user-info">
+            <h4>{{ user.username }}</h4>
+            <p>Customer</p>
+        </div>
+    </div>
+    
+    <nav class="sidebar-nav">
+        <a href="{% url 'bank:dashboard' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <span class="sidebar-nav-icon">📊</span>
+            Dashboard
+        </a>
+        <a href="{% url 'bank:transactions' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'transactions' %}active{% endif %}">
+            <span class="sidebar-nav-icon">💳</span>
+            Transactions
+        </a>
+        <a href="{% url 'bank:deposit' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'deposit' %}active{% endif %}">
+            <span class="sidebar-nav-icon">↓</span>
+            Deposit
+        </a>
+        <a href="{% url 'bank:withdraw' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'withdraw' %}active{% endif %}">
+            <span class="sidebar-nav-icon">↑</span>
+            Withdraw
+        </a>
+        <a href="#" class="sidebar-nav-item">
+            <span class="sidebar-nav-icon">👤</span>
+            Profile
+        </a>
+        <a href="#" class="sidebar-nav-item">
+            <span class="sidebar-nav-icon">⚙️</span>
+            Settings
+        </a>
+    </nav>
+    
+    <div class="sidebar-promo-card">
+        <p>Just click and go<br><strong>PRO version</strong></p>
+        <button class="sidebar-promo-btn">
+            <span>✨</span>
+            Upgrade Now
+        </button>
+    </div>
+    
+    <div class="sidebar-footer">
+        <a href="{% url 'users:logout' %}" class="sidebar-nav-item" style="margin: 0;">
+            <span class="sidebar-nav-icon">🚪</span>
+            Logout
+        </a>
+    </div>
+</aside>
