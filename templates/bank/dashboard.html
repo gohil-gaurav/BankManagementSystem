@@ -411,116 +411,422 @@
         font-size: 0.875rem;
     }
     
-    /* Financial Overview Card - Bank Card Style */
-    .financial-card {
-        background: linear-gradient(135deg, #0F2D3A 0%, #1E3A4A 100%);
-        border-radius: 16px;
+    /* Card Section with Tabs - Modern Design */
+    .card-section-wrapper {
+        background: #FFFFFF;
+        border-radius: 20px;
         padding: 2rem;
         margin-bottom: 2rem;
-        max-width: 450px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        position: relative;
-        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
     
-    .financial-card::before {
+    .card-tabs {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 2.5rem;
+        border-bottom: 2px solid #F3F4F6;
+        padding-bottom: 1rem;
+    }
+    
+    .card-tab {
+        background: none;
+        border: none;
+        color: #9CA3AF;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        padding: 0.5rem 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .card-tab.active {
+        color: #111827;
+        font-weight: 600;
+    }
+    
+    .card-tab.active::after {
         content: '';
         position: absolute;
-        top: -50%;
-        right: -10%;
-        width: 300px;
-        height: 300px;
-        background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
-        border-radius: 50%;
+        bottom: -1rem;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #111827;
     }
     
-    .financial-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
+    .card-menu-dots {
+        margin-left: auto;
+        font-size: 1.5rem;
+        color: #9CA3AF;
+        cursor: pointer;
+    }
+    
+    .card-content-grid {
+        display: grid;
+        grid-template-columns: 450px 400px 1fr;
+        gap: 2.5rem 3.5rem;
+        align-items: start;
+    }
+    
+    /* Bank Card Display */
+    .card-display-section {
         position: relative;
-        z-index: 1;
     }
     
-    .financial-card-title {
-        color: #94A3B8;
-        font-size: 0.8125rem;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-    }
-    
-    .financial-card-status {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: rgba(255, 255, 255, 0.1);
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        font-size: 0.8125rem;
-        font-weight: 600;
-        color: #FFFFFF;
-    }
-    
-    .status-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        animation: pulse 2s infinite;
-    }
-    
-    .status-active { background: #10B981; }
-    .status-frozen { background: #EF4444; }
-    
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.6; }
-    }
-    
-    .financial-card-balance {
+    .bank-card {
+        width: 100%;
+        max-width: 450px;
+        aspect-ratio: 1.586;
+        background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+        border-radius: 20px;
+        padding: 2.25rem;
         position: relative;
-        z-index: 1;
-        margin-bottom: 2rem;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     }
     
-    .financial-card-balance-label {
-        color: #94A3B8;
-        font-size: 0.875rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .financial-card-balance-amount {
-        font-size: 3rem;
-        font-weight: 700;
-        color: #FFFFFF;
-        letter-spacing: -0.03em;
-        line-height: 1;
-    }
-    
-    .financial-card-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: 1.5rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        position: relative;
-        z-index: 1;
-    }
-    
-    .financial-card-account {
-        color: #94A3B8;
-        font-size: 0.875rem;
-        font-weight: 500;
-    }
-    
-    .financial-card-chip {
+    .card-chip {
         width: 50px;
         height: 40px;
-        background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-        border-radius: 6px;
+        background: linear-gradient(135deg, #D4AF37 0%, #C5A028 100%);
+        border-radius: 8px;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 2rem;
+    }
+    
+    .chip-line {
+        height: 2px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 1px;
+    }
+    
+    .card-decoration {
+        position: absolute;
+        top: 20%;
+        right: 10%;
+        width: 120px;
+        height: 120px;
+    }
+    
+    .decoration-ray {
+        position: absolute;
+        width: 60px;
+        height: 8px;
+        background: linear-gradient(90deg, #EF4444 0%, #DC2626 100%);
+        transform-origin: left center;
+        border-radius: 4px;
+    }
+    
+    .decoration-ray:nth-child(1) { transform: rotate(0deg); }
+    .decoration-ray:nth-child(2) { transform: rotate(20deg); }
+    .decoration-ray:nth-child(3) { transform: rotate(40deg); }
+    .decoration-ray:nth-child(4) { transform: rotate(60deg); }
+    .decoration-ray:nth-child(5) { transform: rotate(80deg); }
+    
+    .card-number {
+        color: #94A3B8;
+        font-size: 1.125rem;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        margin-bottom: 1.5rem;
+        font-family: 'Courier New', monospace;
+    }
+    
+    .card-holder {
+        color: #FFFFFF;
+        font-size: 1rem;
+        font-weight: 600;
+        text-transform: capitalize;
+        margin-bottom: 1rem;
+    }
+    
+    .card-logo {
+        position: absolute;
+        bottom: 2rem;
+        right: 2rem;
+        display: flex;
+        gap: -10px;
+    }
+    
+    .logo-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid #FFFFFF;
         opacity: 0.8;
     }
+    
+    .logo-circle:first-child {
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .card-logo circle:last-child {
+        background: rgba(255, 255, 255, 0.3);
+        margin-left: -15px;
+    }
+    
+    /* ========================================
+       ACCOUNT SUMMARY - STEP 4: LAYOUT BALANCE
+       Better proportions and spacing
+       ======================================== */
+    
+    .account-summary-container {
+        background: #FAFAFA;
+        border: 1px solid #EBEBEB;
+        border-radius: 12px;
+        padding: 2rem 2.5rem;
+        width: 400px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+    
+    /* Balance Badge - Left Aligned with Data Columns */
+    .balance-badge-wrapper {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 1.75rem;
+        padding-left: 0;
+    }
+    
+    .balance-oval-badge {
+        border: 2.5px solid #B8B8B8;
+        border-radius: 40px;
+        padding: 0.5rem 2rem;
+        background: #FFFFFF;
+        font-size: 1.375rem;
+        font-weight: 700;
+        color: #1A1A1A;
+        letter-spacing: -0.01em;
+    }
+    
+    /* Data Grid Layout - Improved Structure */
+    .account-data-grid {
+        display: grid;
+        grid-template-columns: auto 1fr 1fr;
+        column-gap: 2rem;
+        row-gap: 1.25rem;
+    }
+    
+    .grid-cell {
+        display: flex;
+        align-items: center;
+    }
+    
+    .grid-cell.empty {
+        /* Empty top-left cell */
+    }
+    
+    /* Month Headers - Stronger Hierarchy */
+    .grid-cell.month-header {
+        font-size: 0.75rem;
+        color: #6B7280;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        justify-content: center;
+        padding-bottom: 0.25rem;
+    }
+    
+    /* Row Labels - Subtle but Readable */
+    .grid-cell.row-label {
+        font-size: 0.75rem;
+        color: #9CA3AF;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+    
+    /* Data Values - Bold and Clear */
+    .grid-cell.data-value {
+        font-size: 0.9375rem;
+        color: #111827;
+        font-weight: 700;
+        justify-content: center;
+        letter-spacing: -0.01em;
+    }
+
+    
+    /* Account Details Section */
+    .account-details-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.875rem;
+        max-width: 340px;
+        margin-left: 1rem;
+    }
+    
+    .user-profile-card {
+        background: #F9FAFB;
+        border-radius: 16px;
+        padding: 1rem;
+        text-align: center;
+    }
+    
+    .user-profile-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.625rem;
+        margin-bottom: 1rem;
+    }
+    
+    .user-avatar-large {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.625rem;
+        font-weight: 700;
+        color: #FFFFFF;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    
+    .user-profile-info h3 {
+        font-size: 0.875rem;
+        color: #9CA3AF;
+        margin: 0 0 0.25rem 0;
+        font-weight: 400;
+    }
+    
+    .user-profile-info h2 {
+        font-size: 1.5rem;
+        color: #111827;
+        margin: 0;
+        font-weight: 700;
+        text-transform: capitalize;
+    }
+    
+    /* Money Flow Stats inside Profile */
+    .money-flow-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 0.875rem;
+        max-width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    .flow-stat-item {
+        background: #FFFFFF;
+        border: 1px solid #E5E7EB;
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        min-height: 56px;
+    }
+    
+    .flow-stat-item:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+    }
+    
+    .flow-stat-left {
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+        flex: 1;
+    }
+    
+    .flow-stat-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+    
+    .flow-stat-icon.income {
+        background: #D1FAE5;
+        color: #10B981;
+    }
+    
+    .flow-stat-icon.expense {
+        background: #FEE2E2;
+        color: #EF4444;
+    }
+    
+    .flow-stat-info h4 {
+        font-size: 0.625rem;
+        color: #9CA3AF;
+        margin: 0 0 0.125rem 0;
+        font-weight: 500;
+        text-align: left;
+    }
+    
+    .flow-stat-info p {
+        font-size: 1rem;
+        color: #111827;
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+    
+    .flow-stat-menu {
+        color: #D1D5DB;
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 0.25rem;
+        transition: color 0.2s ease;
+        position: relative;
+    }
+    
+    .flow-stat-menu:hover {
+        color: #9CA3AF;
+    }
+    
+    .flow-stat-actions {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        margin-top: 0.5rem;
+        background: #FFFFFF;
+        border: 1px solid #E5E7EB;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 0.5rem 0;
+        min-width: 140px;
+        z-index: 10;
+    }
+    
+    .flow-stat-actions.active {
+        display: block;
+    }
+    
+    .flow-stat-actions a,
+    .flow-stat-actions button {
+        display: block;
+        width: 100%;
+        padding: 0.5rem 1rem;
+        text-align: left;
+        font-size: 0.875rem;
+        color: #374151;
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        text-decoration: none;
+    }
+    
+    .flow-stat-actions a:hover,
+    .flow-stat-actions button:hover {
+        background: #F3F4F6;
+    }
+
     
     /* Stats Grid */
     .stats-grid {
@@ -586,72 +892,14 @@
         color: #6B7280;
         font-weight: 400;
     }
+
     
-    /* Action Buttons */
-    .action-buttons {
+    /* Dashboard Grid Layout */
+    .dashboard-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
+        grid-template-columns: 1fr 400px;
+        gap: 2rem;
         margin-bottom: 2rem;
-    }
-    
-    .action-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.625rem;
-        padding: 0.875rem 1.5rem;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 0.9375rem;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        border: none;
-        cursor: pointer;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    }
-    
-    .action-btn-success {
-        background: #10B981;
-        color: #FFFFFF;
-    }
-    
-    .action-btn-success:hover:not(:disabled) {
-        background: #059669;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
-    }
-    
-    .action-btn-primary {
-        background: #3B82F6;
-        color: #FFFFFF;
-    }
-    
-    .action-btn-primary:hover:not(:disabled) {
-        background: #2563EB;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
-    }
-    
-    .action-btn-outline {
-        background: #FFFFFF;
-        border: 1px solid #E5E7EB;
-        color: #111827;
-    }
-    
-    .action-btn-outline:hover:not(:disabled) {
-        background: #F9FAFB;
-        border-color: #D1D5DB;
-        transform: translateY(-1px);
-    }
-    
-    .action-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-    
-    .action-btn-icon {
-        font-size: 1.125rem;
     }
     
     /* Recent Transactions Section */
@@ -661,7 +909,6 @@
         border-radius: 12px;
         padding: 2rem;
         box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-        margin-bottom: 2rem;
     }
     
     .transactions-header {
@@ -675,17 +922,17 @@
     
     .transactions-header h2 {
         font-size: 1.25rem;
-        font-weight: 600;
+        font-weight: 700;
         color: #111827;
         margin: 0;
-        letter-spacing: -0.01em;
+        letter-spacing: -0.02em;
     }
     
     .view-all-link {
-        color: #3B82F6;
+        color: #9CA3AF;
         text-decoration: none;
         font-size: 0.875rem;
-        font-weight: 600;
+        font-weight: 500;
         display: flex;
         align-items: center;
         gap: 0.375rem;
@@ -693,8 +940,132 @@
     }
     
     .view-all-link:hover {
-        color: #2563EB;
+        color: #111827;
         gap: 0.625rem;
+    }
+    
+    /* Money Flow Chart Section */
+    .money-flow-section {
+        background: #FFFFFF;
+        border: 1px solid #E5E7EB;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    }
+    
+    .money-flow-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.75rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #E5E7EB;
+    }
+    
+    .money-flow-header h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0;
+        letter-spacing: -0.02em;
+    }
+    
+    .month-selector {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #F9FAFB;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 1px solid #E5E7EB;
+        font-size: 0.875rem;
+        color: #6B7280;
+        font-weight: 500;
+    }
+    
+    .chart-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem 0;
+        position: relative;
+    }
+    
+    .pie-chart {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        position: relative;
+        background: conic-gradient(
+            #10B981 0deg 295deg,
+            #EF4444 295deg 360deg
+        );
+    }
+    
+    .pie-chart::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 140px;
+        height: 140px;
+        background: #FFFFFF;
+        border-radius: 50%;
+    }
+    
+    .chart-label-income {
+        position: absolute;
+        top: 20%;
+        right: -10%;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #EF4444;
+    }
+    
+    .chart-label-expense {
+        position: absolute;
+        bottom: 10%;
+        left: -5%;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #111827;
+    }
+    
+    .chart-legend {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1.5rem;
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: #6B7280;
+    }
+    
+    .legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+    
+    .legend-dot.income {
+        background: #10B981;
+    }
+    
+    .legend-dot.expense {
+        background: #EF4444;
+    }
+    
+    .chart-menu-dots {
+        color: #9CA3AF;
+        font-size: 1.25rem;
+        cursor: pointer;
     }
     
     /* Transaction Table */
@@ -862,19 +1233,16 @@
             gap: 1rem;
         }
         
-        .financial-card {
-            padding: 1.5rem;
-        }
-        
-        .financial-card-balance-amount {
-            font-size: 2.5rem;
+        .card-content-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
         }
         
         .stats-grid {
             grid-template-columns: 1fr;
         }
         
-        .action-buttons {
+        .dashboard-grid {
             grid-template-columns: 1fr;
         }
         
@@ -977,91 +1345,138 @@
         </div>
         {% endif %}
         
-        <!-- Financial Overview Card -->
-        <div class="financial-card">
-            <div class="financial-card-header">
-                <div class="financial-card-title">Account Balance</div>
-                <div class="financial-card-status">
-                    <span class="status-dot {% if account.status == 'ACTIVE' %}status-active{% else %}status-frozen{% endif %}"></span>
-                    {% if account.status == 'ACTIVE' %}Active{% else %}Frozen{% endif %}
+        <!-- Card Section with Tabs and User Profile -->
+        <div class="card-section-wrapper">
+            <!-- Card Type Tabs -->
+            <div class="card-tabs">
+                <button class="card-tab active" data-card="universal">Universal card</button>
+                <button class="card-tab" data-card="silver">Silver</button>
+                <button class="card-tab" data-card="platinum">Platinum</button>
+                <div class="card-menu-dots">⋯</div>
+            </div>
+            
+            <div class="card-content-grid">
+                <!-- Left: Card Display -->
+                <div class="card-display-section">
+                    <div class="bank-card universal-card">
+                        <div class="card-chip">
+                            <div class="chip-line"></div>
+                            <div class="chip-line"></div>
+                            <div class="chip-line"></div>
+                        </div>
+                        <div class="card-decoration">
+                            <div class="decoration-ray"></div>
+                            <div class="decoration-ray"></div>
+                            <div class="decoration-ray"></div>
+                            <div class="decoration-ray"></div>
+                            <div class="decoration-ray"></div>
+                        </div>
+                        <div class="card-number">{{ account.account_number }}</div>
+                        <div class="card-holder">{{ user.username }}</div>
+                        <div class="card-logo">
+                            <div class="logo-circle"></div>
+                            <div class="logo-circle"></div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="financial-card-balance">
-                <div class="financial-card-balance-label">Total Balance</div>
-                <div class="financial-card-balance-amount">₹{{ account.balance|floatformat:2 }}</div>
-            </div>
-            
-            <div class="financial-card-footer">
-                <div class="financial-card-account">{{ account.account_number }}</div>
-                <div class="financial-card-chip"></div>
+                
+                <!-- Middle: Account Summary (Complete Rewrite) -->
+                <div class="account-summary-container">
+                    <!-- Balance Badge -->
+                    <div class="balance-badge-wrapper">
+                        <div class="balance-oval-badge">₹{{ account.balance|floatformat:0 }}</div>
+                    </div>
+                    
+                    <!-- Data Grid -->
+                    <div class="account-data-grid">
+                        <!-- Empty cell -->
+                        <div class="grid-cell empty"></div>
+                        <!-- July header -->
+                        <div class="grid-cell month-header">July</div>
+                        <!-- August header -->
+                        <div class="grid-cell month-header">August</div>
+                        
+                        <!-- Available row -->
+                        <div class="grid-cell row-label">Available</div>
+                        <div class="grid-cell data-value">₹{{ account.balance|floatformat:0 }}</div>
+                        <div class="grid-cell data-value">₹{{ account.balance|floatformat:0 }}</div>
+                        
+                        <!-- Credit limit row -->
+                        <div class="grid-cell row-label">Credit limit</div>
+                        <div class="grid-cell data-value">₹12,000</div>
+                        <div class="grid-cell data-value">₹20,000</div>
+                        
+                        <!-- Credit used row -->
+                        <div class="grid-cell row-label">Credit used</div>
+                        <div class="grid-cell data-value">₹10,000</div>
+                        <div class="grid-cell data-value">₹0.00</div>
+                    </div>
+                </div>
+                
+                <!-- Right: User Profile -->
+                <div class="account-details-section">
+                        <div class="user-profile-header">
+                            <div class="user-avatar-large">
+                                {{ user.username|slice:":1"|upper }}
+                            </div>
+                            <div class="user-profile-info">
+                                <h3>Welcome back,</h3>
+                                <h2>{{ user.username }}</h2>
+                            </div>
+                        </div>
+                        
+                        <!-- Money Flow Stats -->
+                        <div class="money-flow-stats">
+                            <div class="flow-stat-item">
+                                <div class="flow-stat-left">
+                                    <div class="flow-stat-icon income">↓</div>
+                                    <div class="flow-stat-info">
+                                        <h4>Income</h4>
+                                        <p>₹{{ total_deposits|floatformat:0|default:"0" }}</p>
+                                    </div>
+                                </div>
+                                <div style="position: relative;">
+                                    <span class="flow-stat-menu" onclick="toggleMenu(this)">⋯</span>
+                                    <div class="flow-stat-actions">
+                                        <a href="#">View details</a>
+                                        <button>Share</button>
+                                        <button>Download</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flow-stat-item">
+                                <div class="flow-stat-left">
+                                    <div class="flow-stat-icon expense">↑</div>
+                                    <div class="flow-stat-info">
+                                        <h4>Expenses</h4>
+                                        <p>₹{{ total_withdrawals|floatformat:0|default:"0" }}</p>
+                                    </div>
+                                </div>
+                                <div style="position: relative;">
+                                    <span class="flow-stat-menu" onclick="toggleMenu(this)">⋯</span>
+                                    <div class="flow-stat-actions">
+                                        <a href="#">View details</a>
+                                        <button>Share</button>
+                                        <button>Download</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-card-header">
-                    <span class="stat-card-title">Total Deposits</span>
-                    <div class="stat-card-icon icon-deposits">↓</div>
-                </div>
-                <div class="stat-card-value">₹{{ total_deposits|floatformat:2|default:"0.00" }}</div>
-                <div class="stat-card-change">All time deposits</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-card-header">
-                    <span class="stat-card-title">Total Withdrawals</span>
-                    <div class="stat-card-icon icon-withdrawals">↑</div>
-                </div>
-                <div class="stat-card-value">₹{{ total_withdrawals|floatformat:2|default:"0.00" }}</div>
-                <div class="stat-card-change">All time withdrawals</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-card-header">
-                    <span class="stat-card-title">Transactions</span>
-                    <div class="stat-card-icon icon-transactions">📊</div>
-                </div>
-                <div class="stat-card-value">{{ transaction_count|default:"0" }}</div>
-                <div class="stat-card-change">Total transactions</div>
-            </div>
-        </div>
-        
-        <!-- Action Buttons -->
-        <div class="action-buttons">
-            {% if account.status == 'FROZEN' %}
-                <button class="action-btn action-btn-success" disabled>
-                    <span class="action-btn-icon">↓</span>
-                    Deposit Money
-                </button>
-                <button class="action-btn action-btn-primary" disabled>
-                    <span class="action-btn-icon">↑</span>
-                    Withdraw Money
-                </button>
-            {% else %}
-                <a href="{% url 'bank:deposit' %}" class="action-btn action-btn-success">
-                    <span class="action-btn-icon">↓</span>
-                    Deposit Money
-                </a>
-                <a href="{% url 'bank:withdraw' %}" class="action-btn action-btn-primary">
-                    <span class="action-btn-icon">↑</span>
-                    Withdraw Money
-                </a>
-            {% endif %}
-            <a href="{% url 'bank:transactions' %}" class="action-btn action-btn-outline">
-                <span class="action-btn-icon">📋</span>
-                View All Transactions
-            </a>
-        </div>
-        
-        <!-- Recent Transactions -->
-        <div class="transactions-section">
+        <!-- Dashboard Grid: Transactions + Money Flow Chart -->
+        <div class="dashboard-grid">
+            <!-- Recent Transactions -->
+            <div class="transactions-section">
             <div class="transactions-header">
-                <h2>Recent Transactions</h2>
+                <h2>Last transactions</h2>
                 {% if recent_transactions %}
                 <a href="{% url 'bank:transactions' %}" class="view-all-link">
-                    View All
+                    View all
                     <span>→</span>
                 </a>
                 {% endif %}
@@ -1078,7 +1493,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for transaction in recent_transactions %}
+                    {% for transaction in recent_transactions|slice:":5" %}
                     <tr>
                         <td>
                             <div class="transaction-type">
@@ -1108,15 +1523,99 @@
                 <div class="empty-state-icon">📊</div>
                 <h3>No transactions yet</h3>
                 <p>Start by making your first deposit to see your transaction history here</p>
-                {% if account.status != 'FROZEN' %}
-                <a href="{% url 'bank:deposit' %}" class="action-btn action-btn-success">
-                    <span class="action-btn-icon">↓</span>
-                    Make Your First Deposit
-                </a>
-                {% endif %}
             </div>
             {% endif %}
         </div>
+        
+        <!-- Money Flow Chart -->
+        <div class="money-flow-section">
+            <div class="money-flow-header">
+                <h2>Money flow</h2>
+                <div class="month-selector">
+                    <span>Aug</span>
+                    <span>▼</span>
+                </div>
+                <span class="chart-menu-dots">⋯</span>
+            </div>
+            
+            <div class="chart-container">
+                <div class="pie-chart">
+                    <span class="chart-label-income">18%</span>
+                    <span class="chart-label-expense">82%</span>
+                </div>
+            </div>
+            
+            <div class="chart-legend">
+                <div class="legend-item">
+                    <span class="legend-dot income"></span>
+                    <span>Income</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot expense"></span>
+                    <span>Expenses</span>
+                </div>
+            </div>
+        </div>
+    </div>
     </main>
 </div>
+
+<script>
+// Card Tab Switching
+document.addEventListener('DOMContentLoaded', function() {
+    const cardTabs = document.querySelectorAll('.card-tab');
+    const bankCard = document.querySelector('.bank-card');
+    
+    cardTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Remove active class from all tabs
+            cardTabs.forEach(t => t.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Get card type
+            const cardType = this.getAttribute('data-card');
+            
+            // Update card styling based on type
+            bankCard.className = 'bank-card ' + cardType + '-card';
+            
+            // Optional: Update card gradient based on type
+            if (cardType === 'silver') {
+                bankCard.style.background = 'linear-gradient(135deg, #475569 0%, #334155 100%)';
+            } else if (cardType === 'platinum') {
+                bankCard.style.background = 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)';
+            } else {
+                bankCard.style.background = 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)';
+            }
+        });
+    });
+});
+</script>
+
+<script>
+// Toggle dropdown menu for income/expense cards
+function toggleMenu(element) {
+    const dropdown = element.nextElementSibling;
+    
+    // Close all other menus
+    document.querySelectorAll('.flow-stat-actions.active').forEach(menu => {
+        if (menu !== dropdown) {
+            menu.classList.remove('active');
+        }
+    });
+    
+    // Toggle current menu
+    dropdown.classList.toggle('active');
+}
+
+// Close menu when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.flow-stat-menu') && !event.target.closest('.flow-stat-actions')) {
+        document.querySelectorAll('.flow-stat-actions.active').forEach(menu => {
+            menu.classList.remove('active');
+        });
+    }
+});
+</script>
 {% endblock %}
