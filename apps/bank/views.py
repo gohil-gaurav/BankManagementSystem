@@ -262,3 +262,127 @@ def transactions_view(request):
         'account': account,
     }
     return render(request, 'bank/transactions.html', context)
+
+
+@login_required
+def download_transaction_pdf(request, transaction_id):
+    """
+    Generate and download PDF receipt for a transaction
+    """
+    from django.http import HttpResponse
+    from reportlab.lib.pagesizes import letter, A4
+    from reportlab.lib import colors
+    from reportlab.lib.units import inch
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.enums import TA_CENTER, TA_RIGHT, TA_LEFT
+    from io import BytesIO
+    from datetime import datetime
+    
+    # Get the transaction
+    try:
+        transaction_obj = Transaction.objects.get(id=transaction_id, account__user=request.user)
+    except Transaction.DoesNotExist:
+        messages.error(request, 'Transaction not found.')
+        return redirect('bank:dashboard')
+    
+    # Create the PDF
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=18)
+    
+    # Container for the 'Flowable' objects
+    elements = []
+    
+    # Define styles
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=24,
+        textColor=colors.HexColor('#1E293B'),
+        spaceAfter=30,
+        alignment=TA_CENTER,
+        fontName='Helvetica-Bold'
+    )
+    
+    heading_style = ParagraphStyle(
+        'CustomHeading',
+        parent=styles['Heading2'],
+        fontSize=14,
+        textColor=colors.HexColor('#475569'),
+        spaceAfter=12,
+        fontName='Helvetica-Bold'
+    )
+    
+    normal_style = ParagraphStyle(
+        'CustomNormal',
+        parent=styles['Normal'],
+        fontSize=10,
+        textColor=colors.HexColor('#64748B'),
+        spaceAfter=6
+    )
+    
+    # Add bank header
+    elements.append(Paragraph("Bank Management System", title_style))
+    elements.append(Paragraph("Transaction Receipt", heading_style))
+    elements.append(Spacer(1, 0.3*inch))
+    
+    # Transaction details
+    transaction_type = "Deposit" if transaction_obj.transaction_type == 'DEPOSIT' else "Withdrawal"
+    amount_prefix = "+" if transaction_obj.transaction_type == 'DEPOSIT' else "-"
+    
+    data = [
+        ['Transaction ID:', str(transaction_obj.id)],
+        ['Account Number:', transaction_obj.account.account_number],
+        ['Account Holder:', transaction_obj.account.user.username.title()],
+        ['Transaction Type:', transaction_type],
+        ['Amount:', f'{amount_prefix}₹{transaction_obj.amount:,.2f}'],
+        ['Date & Time:', transaction_obj.timestamp.strftime('%B %d, %Y • %I:%M %p')],
+        ['Status:', transaction_obj.status.title()],
+        ['Balance After:', f'₹{transaction_obj.balance_after:,.2f}'],
+    ]
+    
+    # Create table
+    table = Table(data, colWidths=[2.5*inch, 4*inch])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#F1F5F9')),
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#1E293B')),
+        ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+        ('ALIGN', (1, 0), (1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 11),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+        ('TOPPADDING', (0, 0), (-1, -1), 12),
+        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#E2E8F0')),
+        ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.white, colors.HexColor('#F8FAFC')]),
+    ]))
+    
+    elements.append(table)
+    elements.append(Spacer(1, 0.5*inch))
+    
+    # Footer
+    footer_text = f"Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}"
+    footer_style = ParagraphStyle(
+        'Footer',
+        parent=styles['Normal'],
+        fontSize=8,
+        textColor=colors.HexColor('#94A3B8'),
+        alignment=TA_CENTER
+    )
+    elements.append(Paragraph(footer_text, footer_style))
+    elements.append(Spacer(1, 0.2*inch))
+    elements.append(Paragraph("This is a computer-generated receipt and does not require a signature.", footer_style))
+    
+    # Build PDF
+    doc.build(elements)
+    
+    # Get the value of the BytesIO buffer and write it to the response
+    pdf = buffer.getvalue()
+    buffer.close()
+    
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="transaction_{transaction_obj.id}_receipt.pdf"'
+    response.write(pdf)
+    
+    return response

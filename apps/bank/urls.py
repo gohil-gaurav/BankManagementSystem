@@ -9,6 +9,7 @@ urlpatterns = [
     path('deposit/', views.deposit_view, name='deposit'),
     path('withdraw/', views.withdraw_view, name='withdraw'),
     path('transactions/', views.transactions_view, name='transactions'),
+    path('transaction/<int:transaction_id>/download/', views.download_transaction_pdf, name='download_transaction_pdf'),
     
     # Manager authentication
     path('manager/login/', manager_views.manager_login_view, name='manager_login'),
